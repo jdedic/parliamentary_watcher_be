@@ -1,0 +1,21 @@
+# Secrets
+.env
+
+# Virtual environments
+venv/
+.venv-dashboard/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Logs and local storage
+logs/
+storage/
+mnt/
+
+# Dev tools
+.git/
+.gitignore

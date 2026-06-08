@@ -1,0 +1,15 @@
+[2m2026-05-09T09:39:05.436930Z[0m [[32m[1minfo     [0m] [1mParliamentary Summary API starting up[0m [[0m[1m[34mapp.main[0m][0m
+[2m2026-05-09T09:39:05.437797Z[0m [[32m[1minfo     [0m] [1mStarting session sync — collecting vergaderings with Eindpublicatie[0m [[0m[1m[34mapp.services.session_service[0m][0m [36mbatch_size[0m=[35m30[0m [36mlimit[0m=[35m2[0m
+HTTP Request: GET https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Vergadering?%24filter=Verwijderd%20eq%20false&%24orderby=ApiGewijzigdOp%20desc&%24top=30&%24skip=0 "HTTP/1.1 200 OK"
+HTTP Request: GET https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Verslag?%24filter=Verwijderd%20eq%20false%20and%20Vergadering_Id%20eq%20bf3314e3-fd54-4986-b7f1-451e63cb2e0a%20and%20Soort%20eq%20%27Eindpublicatie%27&%24orderby=ApiGewijzigdOp%20desc "HTTP/1.1 200 OK"
+HTTP Request: GET https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Verslag?%24filter=Verwijderd%20eq%20false%20and%20Vergadering_Id%20eq%20dc1d9d45-83b4-4fcf-a0a5-d9cb43d17967%20and%20Soort%20eq%20%27Eindpublicatie%27&%24orderby=ApiGewijzigdOp%20desc "HTTP/1.1 200 OK"
+[2m2026-05-09T09:39:05.904416Z[0m [[32m[1minfo     [0m] [1mCollected vergaderings with Eindpublicatie[0m [[0m[1m[34mapp.core.http_client[0m][0m [36mfound[0m=[35m2[0m [36mrequested[0m=[35m2[0m
+[2m2026-05-09T09:39:05.904921Z[0m [[32m[1minfo     [0m] [1mFetched sessions with Eindpublicatie[0m [[0m[1m[34mapp.services.session_service[0m][0m [36mcount[0m=[35m2[0m
+[2m2026-05-09T09:39:06.035125Z[0m [[32m[1minfo     [0m] [1msession_already_processed_skipping[0m [[0m[1m[34mapp.services.session_service[0m][0m [36msession_id[0m=[35mbf3314e3-fd54-4986-b7f1-451e63cb2e0a[0m [36mstatus[0m=[35mSUMMARISED[0m
+[2m2026-05-09T09:39:06.036504Z[0m [[32m[1minfo     [0m] [1msession_already_processed_skipping[0m [[0m[1m[34mapp.services.session_service[0m][0m [36msession_id[0m=[35mdc1d9d45-83b4-4fcf-a0a5-d9cb43d17967[0m [36mstatus[0m=[35mCHUNK_SUMMARISED[0m
+[2m2026-05-09T09:39:06.037270Z[0m [[32m[1minfo     [0m] [1mSession sync complete         [0m [[0m[1m[34mapp.services.session_service[0m][0m [36mfailed_documents[0m=[35m0[0m [36mfailed_sessions[0m=[35m0[0m [36mnew_documents[0m=[35m0[0m [36mnew_sessions[0m=[35m0[0m [36mtotal_fetched[0m=[35m2[0m
+[2m2026-05-09T09:39:06.037730Z[0m [[32m[1minfo     [0m] [1mStartup sync finished         [0m [[0m[1m[34mapp.main[0m][0m [36mfailed_documents[0m=[35m0[0m [36mfailed_sessions[0m=[35m0[0m [36mnew_documents[0m=[35m0[0m [36mnew_sessions[0m=[35m0[0m [36mtotal_fetched[0m=[35m2[0m
+Adding job tentatively -- it will be properly scheduled when the scheduler starts
+Added job "_run_sync" to job store "default"
+Scheduler started
+[2m2026-05-09T09:39:06.040944Z[0m [[32m[1minfo     [0m] [1mscheduler_started             [0m [[0m[1m[34mapp.core.scheduler[0m][0m [36minterval_minutes[0m=[35m60[0m

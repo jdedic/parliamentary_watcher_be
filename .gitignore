@@ -1,0 +1,15 @@
+.env
+.env.example
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+storage/xml_files/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+SLIDES_OUTLINE.md
+PRESENTATION.md

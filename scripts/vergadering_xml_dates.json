@@ -1,0 +1,642 @@
+[
+  {
+    "vergadering_id": "0b12018c-df39-4c38-bff4-3e0a4248ea40",
+    "date": "2026-03-17",
+    "meeting_number": 52,
+    "title": "52e vergadering, dinsdag 17 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-17T14:00:00+01:00",
+    "end_time": "2026-03-17T18:03:08+01:00",
+    "xml_count": 8,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "a3d4524f-56e3-4f8c-b4da-67898a3b5424",
+      "published_at": "2026-03-17T20:18:54.9629138Z"
+    }
+  },
+  {
+    "vergadering_id": "4de15481-15e9-48d7-8bf6-9ec1a70772cb",
+    "date": "2026-03-12",
+    "meeting_number": 0,
+    "title": "BOA-stelsel",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-12T14:00:00+01:00",
+    "end_time": "2026-03-12T16:32:59+01:00",
+    "xml_count": 3,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "c1c6bbb8-2672-4dc6-accb-d51dd46fa00f",
+      "published_at": "2026-03-17T19:36:06.9814228Z"
+    }
+  },
+  {
+    "vergadering_id": "44fda645-2703-4def-9a01-1be78268808e",
+    "date": "2026-03-12",
+    "meeting_number": 0,
+    "title": "Drugsbeleid",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-12T10:00:00+01:00",
+    "end_time": "2026-03-12T12:59:12+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "92f75c39-08c5-47ab-92f0-81f9f0eca471",
+      "published_at": "2026-03-17T11:24:32.7704501Z"
+    }
+  },
+  {
+    "vergadering_id": "adb81c01-9a90-4594-ab63-55b97d73ee22",
+    "date": "2026-03-11",
+    "meeting_number": 0,
+    "title": "Artikel 100 inzet in de Middellandse Zee",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-11T16:00:00+01:00",
+    "end_time": "2026-03-11T19:09:33+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "23fbc8fa-b319-4228-8d2e-d4c9d1eb981f",
+      "published_at": "2026-03-17T09:22:20.0147634Z"
+    }
+  },
+  {
+    "vergadering_id": "4623e94a-0d70-4b48-9af7-41acaef927f5",
+    "date": "2026-03-11",
+    "meeting_number": 0,
+    "title": "Gevangeniswezen",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-11T10:00:00+01:00",
+    "end_time": "2026-03-11T14:11:01+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "21fa9fd6-5063-44a7-9943-011e26e3848e",
+      "published_at": "2026-03-13T12:50:29.8382831Z"
+    }
+  },
+  {
+    "vergadering_id": "4bda78b0-1d83-43af-b95e-777d0f061fce",
+    "date": "2026-03-12",
+    "meeting_number": 51,
+    "title": "51e vergadering, donderdag 12 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-12T10:15:00+01:00",
+    "end_time": "2026-03-12T23:17:33+01:00",
+    "xml_count": 17,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "ee42f8ea-7adf-4fe3-b5f4-730f23379701",
+      "published_at": "2026-03-13T09:36:14.8102723Z"
+    }
+  },
+  {
+    "vergadering_id": "2c00238b-4cf8-4f28-a809-e2565bfc3b9f",
+    "date": "2025-12-15",
+    "meeting_number": 13,
+    "title": "OCW-begroting, onderdeel Emancipatie ",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2025-12-15T10:00:00+01:00",
+    "end_time": "2025-12-15T13:38:57+01:00",
+    "xml_count": 3,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "34eaa0ad-79c0-4eb6-a713-6d1c941f71cd",
+      "published_at": "2026-03-12T14:50:34.6562024Z"
+    }
+  },
+  {
+    "vergadering_id": "e98749b7-d9be-41b8-936e-58e18479b31b",
+    "date": "2026-03-11",
+    "meeting_number": 50,
+    "title": "50e vergadering, woensdag 11 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-11T10:15:00+01:00",
+    "end_time": "2026-03-11T19:52:48+01:00",
+    "xml_count": 7,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "d9e6bc0d-6824-4617-a50f-77d06a5b0ae3",
+      "published_at": "2026-03-11T20:21:08.9996489Z"
+    }
+  },
+  {
+    "vergadering_id": "305a31c7-76ee-49d8-9615-8664f9468035",
+    "date": "2026-01-22",
+    "meeting_number": 34,
+    "title": "34e vergadering, donderdag 22 januari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-01-22T10:15:00+01:00",
+    "end_time": "2026-01-22T21:28:46+01:00",
+    "xml_count": 15,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "c758138b-5e01-4267-bbb2-fa7290644108",
+      "published_at": "2026-03-11T10:19:44.8708621Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "d1474cdc-cbd0-449b-87fc-64cfd427b83d",
+    "date": "2026-03-10",
+    "meeting_number": 49,
+    "title": "49e vergadering, dinsdag 10 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-10T14:00:00+01:00",
+    "end_time": "2026-03-11T00:08:39+01:00",
+    "xml_count": 11,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "9b40874f-2b97-4b63-8a23-41044a56695a",
+      "published_at": "2026-03-11T00:10:13.54603Z"
+    }
+  },
+  {
+    "vergadering_id": "534ce9d7-9a85-466e-ad1c-ff81970f4093",
+    "date": "2026-03-10",
+    "meeting_number": 84,
+    "title": "Onderzoekrapport van de Auditdienst Rijk over 'Onderzoek database met administratieve vastleggingen van verzonden brieven en ontvangen reacties vanuit het massale uitvraagproces'",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-10T18:00:00+01:00",
+    "end_time": "2026-03-10T18:30:40+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "940f1763-1b83-4986-9b0d-8e977ffa7744",
+      "published_at": "2026-03-10T22:56:56.6866956Z"
+    }
+  },
+  {
+    "vergadering_id": "4e5d5ca7-269d-4245-a3ac-ce22376d3983",
+    "date": "2026-03-10",
+    "meeting_number": 87,
+    "title": "Voortgangsrapportage hersteloperatie toeslagen over de periode september - december 2025 (22e VGR",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-10T18:45:00+01:00",
+    "end_time": "2026-03-10T19:03:37+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "9b3d8976-9657-421d-8e98-b5915d164166",
+      "published_at": "2026-03-10T22:56:41.8337764Z"
+    }
+  },
+  {
+    "vergadering_id": "cf2edba2-27cf-4eab-89f5-c4ccf2087211",
+    "date": "2025-11-20",
+    "meeting_number": 2,
+    "title": "Bijzondere Verenigde Vergadering 20 november 2025",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2025-11-20T10:30:00+01:00",
+    "end_time": "2025-11-20T11:28:04+01:00",
+    "xml_count": 3,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "03146eb7-70ce-4c3d-879e-d3205ea418d5",
+      "published_at": "2026-03-10T15:53:50.1228192Z"
+    }
+  },
+  {
+    "vergadering_id": "1aec34ad-a995-479d-ad6e-ffd4954f22c3",
+    "date": "2025-06-24",
+    "meeting_number": 4094,
+    "title": "Toespraak van de Oekraïense president Zelensky",
+    "parliamentary_year": "2024-2025",
+    "start_time": "2025-06-24T15:59:00+02:00",
+    "end_time": "2025-06-24T16:54:57+02:00",
+    "xml_count": 2,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "2071a029-7429-4e88-a66e-18b6f6a3d657",
+      "published_at": "2026-03-10T15:53:50.1342822Z"
+    }
+  },
+  {
+    "vergadering_id": "dc1d9d45-83b4-4fcf-a0a5-d9cb43d17967",
+    "date": "2026-03-04",
+    "meeting_number": 47,
+    "title": "47e vergadering, woensdag 4 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-04T10:15:00+01:00",
+    "end_time": "2026-03-04T20:38:46+01:00",
+    "xml_count": 10,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "2d2fe3b7-84db-4309-a87d-d59cebe3fd19",
+      "published_at": "2026-03-10T15:43:55.7179106Z"
+    }
+  },
+  {
+    "vergadering_id": "fd1bb3ac-6b07-47be-becb-1e5b04371d8c",
+    "date": "2026-03-09",
+    "meeting_number": 29,
+    "title": " Ontwerp-Nota Ruimte ",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-09T14:00:00+01:00",
+    "end_time": "2026-03-09T19:20:24+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "cbb45b9a-1bfc-4d11-9e42-8764bef10eec",
+      "published_at": "2026-03-10T13:29:39.6939414Z"
+    }
+  },
+  {
+    "vergadering_id": "1fbf973d-b9d5-449f-b020-97981228a425",
+    "date": "2026-01-21",
+    "meeting_number": 33,
+    "title": "33e vergadering, woensdag 21 januari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-01-21T10:15:00+01:00",
+    "end_time": "2026-01-21T21:43:56+01:00",
+    "xml_count": 12,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "f7aee070-fc90-4470-ac6b-e250e5523c17",
+      "published_at": "2026-03-10T11:36:12.9179782Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "69145516-cc3d-4c63-9ea3-a1384dce3aac",
+    "date": "2026-03-04",
+    "meeting_number": 0,
+    "title": "Waterstof, groen gas en andere energiedragers",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-04T14:00:00+01:00",
+    "end_time": "2026-03-04T16:45:53+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "b2b4e317-a0fb-4d79-ac8d-31574c00f586",
+      "published_at": "2026-03-10T11:08:20.8789162Z"
+    }
+  },
+  {
+    "vergadering_id": "33dc4909-acb2-45e0-8ef8-03ab6478d898",
+    "date": "2026-03-04",
+    "meeting_number": 0,
+    "title": "Eurogroep/Ecofin-Raad d.d. 9 en 10 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-04T10:00:00+01:00",
+    "end_time": "2026-03-04T12:29:49+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "e58754f0-1942-426d-b7a7-091d354c87c8",
+      "published_at": "2026-03-10T10:51:34.2746191Z"
+    }
+  },
+  {
+    "vergadering_id": "017afd45-3796-4267-b40b-fe5d6b774b99",
+    "date": "2026-03-09",
+    "meeting_number": 30,
+    "title": "Integratie en maatschappelijke samenhang (beleidsartikel 13 begroting SZW)",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-09T16:30:00+01:00",
+    "end_time": "2026-03-09T22:28:57+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "2f79c038-cc2b-4e98-a083-c994e6a998aa",
+      "published_at": "2026-03-09T22:33:41.4183528Z"
+    }
+  },
+  {
+    "vergadering_id": "11bf8b3d-77fd-4c90-8393-744bd421060a",
+    "date": "2026-03-09",
+    "meeting_number": 28,
+    "title": "Begrotingsonderdeel Gehandicaptenbeleid",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-09T10:00:00+01:00",
+    "end_time": "2026-03-09T17:06:54+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "8acc0baf-ebc6-4271-9ec0-d14c1ce111b6",
+      "published_at": "2026-03-09T18:58:39.0960629Z"
+    }
+  },
+  {
+    "vergadering_id": "33f7b9e8-8311-47a9-8831-11fd43e586ec",
+    "date": "2026-03-04",
+    "meeting_number": 0,
+    "title": "Leven Lang Ontwikkelen en laaggeletterdheid",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-04T10:00:00+01:00",
+    "end_time": "2026-03-04T12:37:52+01:00",
+    "xml_count": 3,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "081783aa-33cc-4377-82b2-0878a243b6f3",
+      "published_at": "2026-03-09T16:21:36.2190363Z"
+    }
+  },
+  {
+    "vergadering_id": "b7e45608-a7a6-4198-bff3-f8089a9f3c7c",
+    "date": "2026-03-04",
+    "meeting_number": 0,
+    "title": "Economische veiligheid en strategische autonomie",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-04T10:00:00+01:00",
+    "end_time": "2026-03-04T12:57:53+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "c22beca8-70f8-4361-8884-ae27f206581a",
+      "published_at": "2026-03-06T14:27:13.9872451Z"
+    }
+  },
+  {
+    "vergadering_id": "bf3314e3-fd54-4986-b7f1-451e63cb2e0a",
+    "date": "2026-03-05",
+    "meeting_number": 48,
+    "title": "48e vergadering, donderdag 5 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-05T10:15:00+01:00",
+    "end_time": "2026-03-05T23:45:20+01:00",
+    "xml_count": 23,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "02171ff2-04e7-42ef-b61d-8f57c7c041d4",
+      "published_at": "2026-03-06T00:48:53.1047687Z"
+    }
+  },
+  {
+    "vergadering_id": "45276ab8-29a5-4969-996b-3f9a0c245dd0",
+    "date": "2019-10-08",
+    "meeting_number": 10,
+    "title": "10e vergadering, dinsdag 8 oktober 2019",
+    "parliamentary_year": "2019-2020",
+    "start_time": "2019-10-08T14:00:00+02:00",
+    "end_time": "2019-10-08T22:54:29+02:00",
+    "xml_count": 7,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "e8058e14-e0ea-453f-a38f-f2523bd5edbb",
+      "published_at": "2026-03-05T16:16:53.5433202Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "d548e921-951b-4c0d-a7fe-41a5a6d24e59",
+    "date": "2026-03-05",
+    "meeting_number": 938,
+    "title": "Gesprek met afvaardiging van de Europese Commissie en de ACM inzake effectiviteit en uitvoering van Europese wetgeving t.a.v. inmenging op grote sociale media platforms",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-05T14:00:00+01:00",
+    "end_time": "2026-03-05T15:07:29+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "bd23b7ee-2985-4640-9617-0461658ed047",
+      "published_at": "2026-03-05T15:47:08.2242055Z"
+    }
+  },
+  {
+    "vergadering_id": "7d21903a-812e-462c-8fd1-cfd20c8b43ba",
+    "date": "2026-03-03",
+    "meeting_number": 46,
+    "title": "46e vergadering, dinsdag 3 maart 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-03T14:00:00+01:00",
+    "end_time": "2026-03-04T01:47:07+01:00",
+    "xml_count": 15,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "63494add-3e70-4e35-8f19-ee5fca768102",
+      "published_at": "2026-03-04T01:35:44.9671688Z"
+    }
+  },
+  {
+    "vergadering_id": "73864b51-cea0-4d72-b567-a234d7e3331d",
+    "date": "2026-03-03",
+    "meeting_number": 0,
+    "title": "JBZ-Raad (Brussel)",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-03T17:00:00+01:00",
+    "end_time": "2026-03-03T19:38:03+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "f29517da-d8a0-47e9-96f5-a93377273076",
+      "published_at": "2026-03-04T00:03:42.4778237Z"
+    }
+  },
+  {
+    "vergadering_id": "ac24be14-6983-47e8-91ec-a593a22511d1",
+    "date": "2026-01-20",
+    "meeting_number": 32,
+    "title": "32e vergadering, dinsdag 20 januari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-01-20T14:00:00+01:00",
+    "end_time": "2026-01-20T19:15:51+01:00",
+    "xml_count": 4,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "4bea6156-9eba-4b4e-b024-d4aacb5bfe1d",
+      "published_at": "2026-03-03T16:09:49.2381319Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "0cde89e9-8c44-43a9-be07-0afcf8378b42",
+    "date": "2026-03-02",
+    "meeting_number": 27,
+    "title": "Wetgevingsoverleg commissie Digitale Zaken ter behandeling van de ontwerpbegrotingen BZK, EZK en J&V, voor zover het onderwerpen betreft die zien op digitale zaken",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-03-02T10:00:00+01:00",
+    "end_time": "2026-03-02T16:24:54+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "3e98e539-d992-4c17-8e88-57cd6f3bbb23",
+      "published_at": "2026-03-02T17:07:13.7220282Z"
+    }
+  },
+  {
+    "vergadering_id": "c38390e5-fb6a-43ab-aa1c-1703ef124ee5",
+    "date": "2026-01-15",
+    "meeting_number": 31,
+    "title": "31e vergadering, donderdag 15 januari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-01-15T10:15:00+01:00",
+    "end_time": "2026-01-15T19:28:02+01:00",
+    "xml_count": 9,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "389cdddd-be53-4408-8d09-138702bb1646",
+      "published_at": "2026-02-27T11:22:50.4569342Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "9aa09fba-164c-4033-b520-9eb68cf03153",
+    "date": "2026-02-26",
+    "meeting_number": 45,
+    "title": "45e vergadering, donderdag 26 februari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-02-26T10:15:00+01:00",
+    "end_time": "2026-02-26T21:37:18+01:00",
+    "xml_count": 13,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "4cc9107f-2483-4ae4-8e0f-a6366503b3d3",
+      "published_at": "2026-02-26T22:41:28.6107641Z"
+    }
+  },
+  {
+    "vergadering_id": "6570aa9b-ceb0-4526-8052-7e646d77e819",
+    "date": "2026-02-25",
+    "meeting_number": 44,
+    "title": "44e vergadering, woensdag 25 februari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-02-25T10:15:00+01:00",
+    "end_time": "2026-02-25T22:42:45+01:00",
+    "xml_count": 7,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "56d4769a-a5bf-4b4d-adec-b8aff2b49e7d",
+      "published_at": "2026-02-25T22:54:01.7161661Z"
+    }
+  },
+  {
+    "vergadering_id": "8fa649f1-1bd9-486b-a286-f339dbf11b39",
+    "date": "2026-01-14",
+    "meeting_number": 30,
+    "title": "30e vergadering, woensdag 14 januari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-01-14T10:15:00+01:00",
+    "end_time": "2026-01-14T21:36:50+01:00",
+    "xml_count": 11,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "65bb4547-b628-4b6f-9e80-c6a5157fb5b5",
+      "published_at": "2026-02-23T14:28:11.0792055Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "5f929d50-3287-4644-bc85-7d189211fae7",
+    "date": "2026-01-13",
+    "meeting_number": 29,
+    "title": "29e vergadering, dinsdag 13 januari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-01-13T14:00:00+01:00",
+    "end_time": "2026-01-13T21:31:50+01:00",
+    "xml_count": 13,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "ee5f3d22-cd89-4275-8e38-057e7e9b3b82",
+      "published_at": "2026-02-18T16:09:21.9145835Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "ac2ff37e-a0b9-4ebb-a818-ac2ef4171ee6",
+    "date": "2025-12-18",
+    "meeting_number": 28,
+    "title": "28e vergadering, donderdag 18 december 2025",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2025-12-18T10:15:00+01:00",
+    "end_time": "2025-12-18T21:46:43+01:00",
+    "xml_count": 13,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "15a87897-1fe9-4576-8524-80031cf2fa50",
+      "published_at": "2026-02-17T11:05:27.1049796Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "e0dc19a7-a8dd-4dd9-9b6f-648b629a5e2b",
+    "date": "2026-02-12",
+    "meeting_number": 0,
+    "title": "Selibon",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-02-12T14:00:00+01:00",
+    "end_time": "2026-02-12T16:09:07+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "921afa0f-6a56-4336-965e-4807948f3785",
+      "published_at": "2026-02-16T17:52:05.0701867Z"
+    }
+  },
+  {
+    "vergadering_id": "90fdba70-58d4-4883-b4c6-59623236ec1a",
+    "date": "2026-02-12",
+    "meeting_number": 0,
+    "title": "Wadden",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-02-12T13:00:00+01:00",
+    "end_time": "2026-02-12T15:48:22+01:00",
+    "xml_count": 1,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "6b29d631-be19-42e5-a746-ba35a00a6b1a",
+      "published_at": "2026-02-16T11:12:54.5577299Z"
+    }
+  },
+  {
+    "vergadering_id": "b3c2b225-c509-4321-8bf2-520c1f7bef14",
+    "date": "2025-12-17",
+    "meeting_number": 27,
+    "title": "27e vergadering, woensdag 17 december 2025",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2025-12-17T10:15:00+01:00",
+    "end_time": "2025-12-17T22:48:04+01:00",
+    "xml_count": 16,
+    "xml_status": "final",
+    "eindpublicatie": {
+      "verslag_id": "b6484d4e-4458-400a-bcda-cd10e83fb28f",
+      "published_at": "2026-02-16T10:02:53.5834386Z"
+    },
+    "latest_tussenpublicatie": null
+  },
+  {
+    "vergadering_id": "f1f521df-f878-4cd2-b02e-ece6bd006817",
+    "date": "2026-02-12",
+    "meeting_number": 43,
+    "title": "43e vergadering, donderdag 12 februari 2026",
+    "parliamentary_year": "2025-2026",
+    "start_time": "2026-02-12T10:15:00+01:00",
+    "end_time": "2026-02-12T17:47:55+01:00",
+    "xml_count": 9,
+    "xml_status": "interim_only",
+    "eindpublicatie": null,
+    "latest_tussenpublicatie": {
+      "verslag_id": "8248682a-ef68-4b98-bf4d-8c507a4c8277",
+      "published_at": "2026-02-13T18:05:33.8088052Z"
+    }
+  }
+]
