@@ -2,6 +2,8 @@ import json
 import uuid
 from pathlib import Path
 
+import aiofiles
+
 from app.core.config import settings
 from app.core.logging import get_logger
 from app.core.utils import validate_guid
@@ -110,7 +112,7 @@ def _group_by_activity(utterances: list[dict]) -> dict[str, list[dict]]:
 # ---------------------------------------------------------------------------
 
 
-def build_chunks(vergadering_id: str) -> Path:
+async def build_chunks(vergadering_id: str) -> Path:
     """
     Read transcript.json for a vergadering, chunk the utterance quotes,
     and write chunks.json to the same directory.
@@ -144,7 +146,8 @@ def build_chunks(vergadering_id: str) -> Path:
     if not transcript_path.exists():
         raise FileNotFoundError(f"transcript.json not found: {transcript_path}")
 
-    transcript = json.loads(transcript_path.read_text(encoding="utf-8"))
+    async with aiofiles.open(transcript_path, encoding="utf-8") as f:
+        transcript = json.loads(await f.read())
 
     vergadering_meta = {
         "vergadering_id": transcript.get("vergadering_id"),
@@ -217,7 +220,8 @@ def build_chunks(vergadering_id: str) -> Path:
         flush(carry_overlap=False)
 
     output_path = vergadering_dir / "chunks.json"
-    output_path.write_text(json.dumps(chunks, ensure_ascii=False, indent=2))
+    async with aiofiles.open(output_path, "w", encoding="utf-8") as f:
+        await f.write(json.dumps(chunks, ensure_ascii=False, indent=2))
 
     logger.info(
         "Chunks written",

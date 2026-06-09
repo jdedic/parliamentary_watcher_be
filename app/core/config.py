@@ -51,7 +51,7 @@ class Settings(BaseSettings):
     allowed_origins: list[str] = ["http://localhost:4200"]
 
     # Rate limiting
-    chat_rate_limit: str = "2/minute"
+    chat_rate_limit: str = "20/minute"
 
     # Logging
     log_level: str = "INFO"

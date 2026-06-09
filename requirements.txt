@@ -18,3 +18,4 @@ spacy>=3.7.0
 defusedxml>=0.7.1
 tenacity>=8.2.0
 slowapi>=0.1.9
+aiofiles>=23.0.0

@@ -89,7 +89,7 @@ async def create_embedding_chunks(
     _: str = Depends(require_api_key),
 ) -> dict:
     try:
-        build_embedding_chunks(session_id)
+        await build_embedding_chunks(session_id)
         return {"status": "ok", "vergadering_id": session_id}
     except FileNotFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session data not found.")

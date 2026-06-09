@@ -1,4 +1,3 @@
-import asyncio
 import os
 import httpx
 from pathlib import Path
@@ -181,14 +180,13 @@ async def sync_sessions(db: AsyncSession) -> dict:
 
             if current_status != SessionStatus.DOWNLOADED:
                 # Parse XML → transcript.json (utterances, speaker, party, activity, timestamps)
-                loop = asyncio.get_event_loop()
-                _, chair_name = await loop.run_in_executor(None, build_transcript, session_id)
+                _, chair_name = await build_transcript(session_id)
                 if chair_name:
                     await repo.update_chair(session_id, chair_name)
                 # Split transcript into 800-1200 word exchange-based chunks → chunks.json
-                await loop.run_in_executor(None, build_chunks, session_id)
+                await build_chunks(session_id)
                 # Build sentence-aware 300-500 word chunks for vector search → chunks_embeddings.json
-                await loop.run_in_executor(None, build_embedding_chunks, session_id)
+                await build_embedding_chunks(session_id)
                 # Embed chunks and upsert into Qdrant (plenary_chunks collection)
                 await generate_embeddings(session_id)
                 logger.info("embeddings_generated", session_id=session_id)

@@ -1,8 +1,11 @@
+import asyncio
 import json
 import defusedxml.ElementTree as ET
 from xml.etree.ElementTree import Element
 from datetime import datetime
 from pathlib import Path
+
+import aiofiles
 
 from app.core.config import settings
 from app.core.logging import get_logger
@@ -206,7 +209,7 @@ def _find_chair(utterances: list[dict]) -> dict | None:
 # ---------------------------------------------------------------------------
 
 
-def build_transcript(vergadering_id: str) -> tuple[Path, str | None]:
+async def build_transcript(vergadering_id: str) -> tuple[Path, str | None]:
     """
     Parse the authoritative XML file for a vergadering and write a transcript JSON.
 
@@ -238,7 +241,7 @@ def build_transcript(vergadering_id: str) -> tuple[Path, str | None]:
     if not xml_files:
         raise ValueError(f"No XML files found in {vergadering_dir}")
 
-    source_file, source_kind = _select_source_file(xml_files)
+    source_file, source_kind = await asyncio.to_thread(_select_source_file, xml_files)
 
     logger.info(
         "Building transcript",
@@ -249,7 +252,7 @@ def build_transcript(vergadering_id: str) -> tuple[Path, str | None]:
     )
 
     try:
-        metadata, utterances = _extract_from_xml(source_file)
+        metadata, utterances = await asyncio.to_thread(_extract_from_xml, source_file)
     except ET.ParseError as exc:
         raise ValueError(f"Failed to parse {source_file.name}: {exc}") from exc
 
@@ -265,7 +268,8 @@ def build_transcript(vergadering_id: str) -> tuple[Path, str | None]:
     }
 
     output_path = vergadering_dir / "transcript.json"
-    output_path.write_text(json.dumps(transcript, ensure_ascii=False, indent=2))
+    async with aiofiles.open(output_path, "w", encoding="utf-8") as f:
+        await f.write(json.dumps(transcript, ensure_ascii=False, indent=2))
 
     logger.info(
         "Transcript written",

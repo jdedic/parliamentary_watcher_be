@@ -2,6 +2,7 @@ import json
 import uuid
 from pathlib import Path
 
+import aiofiles
 import nltk
 from nltk.tokenize import sent_tokenize
 
@@ -99,7 +100,7 @@ def _split_exchange_by_sentences(
     return sub_chunks
 
 
-def build_embedding_chunks(vergadering_id: str) -> Path:
+async def build_embedding_chunks(vergadering_id: str) -> Path:
     """
     Read transcript.json and produce chunks_embeddings.json optimised for
     vector search.
@@ -133,7 +134,8 @@ def build_embedding_chunks(vergadering_id: str) -> Path:
 
     logger.info("embedding_chunks_started", vergadering_id=vergadering_id)
 
-    transcript = json.loads(transcript_path.read_text(encoding="utf-8"))
+    async with aiofiles.open(transcript_path, encoding="utf-8") as f:
+        transcript = json.loads(await f.read())
 
     vergadering = {
         "id": transcript.get("vergadering_id"),
@@ -243,7 +245,8 @@ def build_embedding_chunks(vergadering_id: str) -> Path:
         chunk["chunk_index"] = i
 
     output_path = vergadering_dir / "chunks_embeddings.json"
-    output_path.write_text(json.dumps(chunks, ensure_ascii=False, indent=2))
+    async with aiofiles.open(output_path, "w", encoding="utf-8") as f:
+        await f.write(json.dumps(chunks, ensure_ascii=False, indent=2))
 
     logger.info(
         "embedding_chunks_written",
