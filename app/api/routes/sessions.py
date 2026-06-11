@@ -7,7 +7,7 @@ from app.core.logging import get_logger
 from app.models.plenary_session import SessionStatus
 from app.core.config import settings
 from app.schemas.plenary_session import SessionListResponse, PlenarySessionSchema, ChatRequest, ChatResponse
-from app.services.session_service import SessionService
+from app.services.session_service import SessionService, sync_sessions
 from app.services.vergadering_summary_service import generate_vergadering_summary
 from app.services.embedding_chunks_service import build_embedding_chunks
 from app.services.embedding_service import generate_embeddings
@@ -18,6 +18,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter(prefix="/sessions", tags=["Sessions"])
 
 logger = get_logger(__name__)
+
+
+@router.post(
+    "/sync",
+    summary="Manually trigger session sync",
+    description="Fetches the latest sessions from Tweede Kamer and stores any new ones. Same logic as startup and scheduled sync.",
+)
+async def trigger_sync(
+    db: AsyncSession = Depends(get_db),
+    _: str = Depends(require_api_key),
+) -> dict:
+    try:
+        summary = await sync_sessions(db)
+        return {"status": "ok", **summary}
+    except Exception as exc:
+        logger.error("manual_sync_failed", error=str(exc), exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Sync failed.",
+        )
 
 
 @router.get(
