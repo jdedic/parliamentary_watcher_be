@@ -17,6 +17,36 @@ logger = get_logger(__name__)
 
 PROCEDURAL_KEYWORDS = ("opening", "sluiting", "stemmingen", "mededelingen", "regeling van werkzaamheden")
 
+_STANCE_ITEM_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "speaker":  {"type": "string"},
+        "party":    {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "activity": {"type": "string"},
+        "stance":   {"type": "string", "enum": ["support", "oppose", "unclear"]},
+        "summary":  {"type": "string"},
+        "evidence": {"type": "string"},
+    },
+    "required": ["speaker", "party", "activity", "stance", "summary", "evidence"],
+    "additionalProperties": False,
+}
+
+EXTRACTION_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {
+        "name": "stances_response",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": {"stances": {"type": "array", "items": _STANCE_ITEM_SCHEMA}},
+            "required": ["stances"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+RANKING_RESPONSE_FORMAT = EXTRACTION_RESPONSE_FORMAT
+
 EXTRACTION_SYSTEM_PROMPT = """You are a parliamentary analyst extracting speaker stances from a Dutch parliamentary debate.
 For each speaker in the excerpt below, classify their stance on the main topic of this debate.
 
@@ -139,8 +169,7 @@ async def _do_extract_stances(vergadering_id: str, db: AsyncSession) -> None:
             response = await chat_with_retry(
                 client,
                 model=settings.openai_model,
-                max_tokens=2000,
-                response_format={"type": "json_object"},
+                response_format=EXTRACTION_RESPONSE_FORMAT,
                 messages=[
                     {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
                     {"role": "user", "content": f"Activity: {activity_name}\n\n{activity_text}"},
@@ -191,8 +220,7 @@ async def _do_extract_stances(vergadering_id: str, db: AsyncSession) -> None:
         ranking_response = await chat_with_retry(
             client,
             model=settings.openai_model,
-            max_tokens=2000,
-            response_format={"type": "json_object"},
+            response_format=RANKING_RESPONSE_FORMAT,
             messages=[
                 {"role": "system", "content": RANKING_SYSTEM_PROMPT},
                 {"role": "user", "content": json.dumps({"stances": all_stances}, ensure_ascii=False)},
