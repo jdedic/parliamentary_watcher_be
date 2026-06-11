@@ -13,7 +13,9 @@ from app.core.database import engine, AsyncSessionLocal
 from app.core.config import settings
 from app.core.scheduler import start_scheduler, stop_scheduler
 from app.models import plenary_session  # noqa: F401 — ensures models are registered
+from app.models import chat_access  # noqa: F401 — ensures models are registered
 from app.api.routes.sessions import router as sessions_router
+from app.api.routes.auth import router as auth_router
 from app.services.session_service import sync_sessions
 from app.services.chat_service import init_clients, close_clients, _get_qdrant
 
@@ -78,6 +80,7 @@ app.add_middleware(
 )
 
 app.include_router(sessions_router, prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1")
 
 
 async def _check_db() -> str:

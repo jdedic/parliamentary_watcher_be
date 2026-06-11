@@ -30,6 +30,28 @@ def _write_entry(log_path: Path, entry: dict) -> None:
         f.write(json.dumps(entry, ensure_ascii=False) + "\n")
 
 
+def get_accuracy_pct() -> float | None:
+    log_path = Path(settings.xml_storage_path).parent / "chat_eval.jsonl"
+    if not log_path.exists():
+        return None
+    total, passed = 0, 0
+    with log_path.open(encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if row.get("_summary"):
+                continue
+            total += 1
+            if row.get("judge_verdict") == "pass":
+                passed += 1
+    return round(passed / total * 100, 1) if total else None
+
+
 async def log_chat_response(
     session_id: str,
     question: str,

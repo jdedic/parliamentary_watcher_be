@@ -40,7 +40,9 @@ def load_data() -> pd.DataFrame:
     if not rows:
         return pd.DataFrame()
     df = pd.json_normalize(rows, sep=".")
-    df["created_at"] = pd.to_datetime(df.get("created_at"), utc=True, errors="coerce")
+    df = df[df.get("_summary", pd.Series(False, index=df.index)) != True]  # skip summary row
+    ts = df.get("created_at", pd.Series(dtype=str)).fillna(df.get("timestamp", pd.Series(dtype=str)))
+    df["created_at"] = pd.to_datetime(ts, utc=True, errors="coerce")
     df["date"] = df["created_at"].dt.date
     df = df.dropna(subset=["date"])
     return df

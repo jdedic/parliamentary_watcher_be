@@ -116,3 +116,4 @@ class ChatResponse(BaseModel):
     retrieval_confidence: Literal["high", "medium", "low"]
     generation_confidence: Literal["high", "medium", "low"]
     judge_verdict: Literal["pass", "needs_review", "fail"]
+    accuracy_pct: float | None = None

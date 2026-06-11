@@ -18,7 +18,7 @@ from app.core.utils import sanitize_text
 from app.repositories.plenary_session_repository import PlenarySessionRepository
 from app.schemas.plenary_session import ChatMessage
 from app.services.judge_service import generate_with_judge
-from app.services.eval_logger import log_chat_response
+from app.services.eval_logger import log_chat_response, get_accuracy_pct
 
 logger = get_logger(__name__)
 
@@ -522,4 +522,5 @@ async def chat_about_session(
         "retrieval_confidence": confidence,
         "generation_confidence": generation_confidence,
         "judge_verdict": judge_verdict,
+        "accuracy_pct": get_accuracy_pct(),
     }
