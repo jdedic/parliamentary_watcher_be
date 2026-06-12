@@ -114,7 +114,6 @@ async def generate_vergadering_summary(vergadering_id: str, db: AsyncSession) ->
             response = await chat_with_retry(
                 client,
                 model=settings.openai_model,
-                max_tokens=1000,
                 messages=[
                     {"role": "system", "content": GENERAL_SUMMARY_PROMPT},
                     {"role": "user", "content": combined_input},
