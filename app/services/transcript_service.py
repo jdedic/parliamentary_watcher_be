@@ -193,14 +193,16 @@ def _extract_from_xml(xml_path: Path) -> tuple[dict, list[dict]]:
 # ---------------------------------------------------------------------------
 
 
-def _find_chair(utterances: list[dict]) -> dict | None:
+def _find_chair(utterances: list[dict]) -> str | None:
     """
     Return the first speaker flagged as chair across all utterances.
     Ministers and other non-chair roles are excluded by the isvoorzitter flag.
     """
     for u in utterances:
         if u["is_chair"]:
-            return {"name": u["speaker"], "party": u["party"]}
+            name = u["speaker"]
+            party = u.get("party")
+            return f"{name} ({party})" if party else name
     return None
 
 
@@ -277,5 +279,4 @@ async def build_transcript(vergadering_id: str) -> tuple[Path, str | None]:
         utterances=len(utterances),
         path=str(output_path),
     )
-    chair_name = chair["name"] if chair else None
-    return output_path, chair_name
+    return output_path, chair

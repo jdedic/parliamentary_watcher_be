@@ -68,7 +68,6 @@ RANKING_SYSTEM_PROMPT = """You are a parliamentary analyst selecting the most po
 From the list below, select between 10 and 20 of the most important stances.
 
 Prefer:
-- Stances clearly classified as "support" or "oppose" over "unclear"
 - Speakers from different parties (diverse representation)
 - Topics with visible disagreement between parties
 - Politically significant positions over procedural ones
