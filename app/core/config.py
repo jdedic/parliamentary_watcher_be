@@ -46,7 +46,7 @@ class Settings(BaseSettings):
 
     sync_limit: int = 2        # Number of vergaderings with Eindpublicatie to sync
     sync_batch_size: int = 30  # Vergaderings fetched per API page while searching
-    sync_interval_minutes: int = 120  # How often the background sync runs
+    sync_interval_minutes: int = 720  # How often the background sync runs
     # CORS
     allowed_origins: list[str] = [
         "http://localhost:4200",
