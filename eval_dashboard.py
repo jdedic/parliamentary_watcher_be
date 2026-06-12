@@ -2,14 +2,12 @@
 RAG Evaluation Dashboard
 Run: streamlit run eval_dashboard.py
 """
-import json
-from pathlib import Path
+import os
 
 import pandas as pd
 import plotly.express as px
+import sqlalchemy as sa
 import streamlit as st
-
-EVAL_LOG = Path("storage/chat_eval.jsonl")
 
 VERDICT_COLORS = {
     "pass": "#2ecc71",
@@ -20,29 +18,38 @@ VERDICT_COLORS = {
 st.set_page_config(page_title="RAG Eval Dashboard", page_icon="📊", layout="wide")
 st.title("📊 RAG Evaluation Dashboard")
 
+_JUDGE_RENAMES = {
+    "judge_grounded": "judge.grounded",
+    "judge_answers_question": "judge.answers_question",
+    "judge_missing_context": "judge.missing_context",
+    "judge_missing_parts": "judge.missing_parts",
+    "judge_unsupported_claims": "judge.unsupported_claims",
+    "judge_entity_errors": "judge.entity_errors",
+    "judge_reason": "judge.reason",
+}
+
 
 # ── Load data ────────────────────────────────────────────────────────────────
 
 @st.cache_data(ttl=10)
 def load_data() -> pd.DataFrame:
-    if not EVAL_LOG.exists():
+    raw_url = os.environ.get("DATABASE_URL", "")
+    if not raw_url:
+        st.error("DATABASE_URL environment variable is not set.")
         return pd.DataFrame()
-    rows = []
-    with EVAL_LOG.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                rows.append(json.loads(line))
-            except json.JSONDecodeError:
-                continue
-    if not rows:
+    db_url = raw_url.replace("+asyncpg", "")
+    engine = sa.create_engine(db_url)
+    try:
+        df = pd.read_sql("SELECT * FROM chat_eval_records ORDER BY created_at DESC", engine)
+    except Exception as exc:
+        st.error(f"Failed to load data from database: {exc}")
         return pd.DataFrame()
-    df = pd.json_normalize(rows, sep=".")
-    df = df[df.get("_summary", pd.Series(False, index=df.index)) != True]  # skip summary row
-    ts = df.get("created_at", pd.Series(dtype=str)).fillna(df.get("timestamp", pd.Series(dtype=str)))
-    df["created_at"] = pd.to_datetime(ts, utc=True, errors="coerce")
+    finally:
+        engine.dispose()
+    if df.empty:
+        return df
+    df = df.rename(columns=_JUDGE_RENAMES)
+    df["created_at"] = pd.to_datetime(df["created_at"], utc=True, errors="coerce")
     df["date"] = df["created_at"].dt.date
     df = df.dropna(subset=["date"])
     return df
@@ -51,7 +58,7 @@ def load_data() -> pd.DataFrame:
 df_all = load_data()
 
 if df_all.empty:
-    st.warning(f"No eval data found at `{EVAL_LOG}`. Send some chat messages first.")
+    st.warning("No eval data found in the database. Send some chat messages first.")
     st.stop()
 
 

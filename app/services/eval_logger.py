@@ -5,7 +5,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.core.config import settings
+from app.core.database import AsyncSessionLocal
 from app.core.logging import get_logger
+from app.models.chat_eval import ChatEvalRecord
 
 logger = get_logger(__name__)
 
@@ -103,3 +105,36 @@ async def log_chat_response(
         await asyncio.to_thread(_write_entry, log_path, entry)
     except Exception as exc:
         logger.warning("eval_log_write_failed", error=str(exc))
+
+    try:
+        judge = entry["judge"]
+        async with AsyncSessionLocal() as db:
+            db.add(ChatEvalRecord(
+                question_id=entry["question_id"],
+                run_id=entry["run_id"],
+                session_id=entry["session_id"],
+                question=entry["question"],
+                answer=entry["answer"],
+                retrieval_confidence=entry["retrieval_confidence"],
+                generation_confidence=entry["generation_confidence"],
+                judge_verdict=entry["judge_verdict"],
+                judge_grounded=judge.get("grounded"),
+                judge_answers_question=judge.get("answers_question"),
+                judge_missing_context=judge.get("missing_context"),
+                judge_missing_parts=judge.get("missing_parts", []),
+                judge_unsupported_claims=judge.get("unsupported_claims", []),
+                judge_entity_errors=judge.get("entity_errors", []),
+                judge_reason=judge.get("reason"),
+                context_chunk_ids=entry["context_chunk_ids"],
+                retrieved_chunk_ids=entry["retrieved_chunk_ids"],
+                matched_speakers=entry["matched_speakers"],
+                regenerated=entry["regenerated"],
+                model=entry["model"],
+                latency_ms=entry["latency_ms"],
+                input_tokens=entry["input_tokens"],
+                output_tokens=entry["output_tokens"],
+                cost_estimate_usd=entry["cost_estimate_usd"],
+            ))
+            await db.commit()
+    except Exception as exc:
+        logger.warning("eval_db_write_failed", error=str(exc))
