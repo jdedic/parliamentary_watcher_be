@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     # CORS
     allowed_origins: list[str] = [
         "http://localhost:4200",
-        "https://parliamentarywatcherfe-production.up.railway.app",
+        "https://parlai.up.railway.app",
     ]
 
     # Rate limiting
