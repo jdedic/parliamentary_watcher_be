@@ -18,6 +18,7 @@ from app.api.routes.sessions import router as sessions_router
 from app.api.routes.auth import router as auth_router
 from app.services.session_service import sync_sessions
 from app.services.chat_service import init_clients, close_clients, _get_qdrant
+from app.services.embedding_service import _ensure_collection
 
 logger = get_logger(__name__)
 
@@ -51,6 +52,7 @@ async def lifespan(app: FastAPI):
     logger.info("Parliamentary Summary API starting up")
 
     init_clients()
+    await _ensure_collection(_get_qdrant())
     asyncio.create_task(_run_startup_sync())
     start_scheduler(settings.sync_interval_minutes)
 
