@@ -73,17 +73,23 @@ async def _ensure_collection(client: AsyncQdrantClient) -> None:
             sparse_vectors_config={"sparse": SparseVectorParams(index=SparseIndexParams())},
         )
         logger.info("qdrant_collection_created", collection=settings.qdrant_collection)
-        for field in ("speakers", "people", "organizations", "locations"):
-            await client.create_payload_index(
-                collection_name=settings.qdrant_collection,
-                field_name=field,
-                field_schema=PayloadSchemaType.TEXT,
-            )
+
+    for field in ("speakers", "people", "organizations", "locations"):
         await client.create_payload_index(
             collection_name=settings.qdrant_collection,
-            field_name="chunk_index",
-            field_schema=PayloadSchemaType.INTEGER,
+            field_name=field,
+            field_schema=PayloadSchemaType.TEXT,
         )
+    await client.create_payload_index(
+        collection_name=settings.qdrant_collection,
+        field_name="vergadering_id",
+        field_schema=PayloadSchemaType.KEYWORD,
+    )
+    await client.create_payload_index(
+        collection_name=settings.qdrant_collection,
+        field_name="chunk_index",
+        field_schema=PayloadSchemaType.INTEGER,
+    )
 
 
 async def generate_embeddings(vergadering_id: str) -> dict:
