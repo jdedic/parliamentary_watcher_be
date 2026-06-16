@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     
     eval_run_id: str = ""      # Empty = auto "live_{YYYYMMDD}"; set to e.g. "benchmark_001" for named runs
 
-    sync_limit: int = 2        # Number of vergaderings with Eindpublicatie to sync
+    sync_limit: int = 3        # Number of vergaderings with Eindpublicatie to sync
     sync_batch_size: int = 30  # Vergaderings fetched per API page while searching
     sync_interval_minutes: int = 720  # How often the background sync runs
     # CORS
