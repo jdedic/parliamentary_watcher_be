@@ -58,6 +58,9 @@ def setup_logging() -> None:
     root_logger.addHandler(stderr_handler)
     root_logger.addHandler(file_handler)
 
+    for noisy in ("httpx", "httpcore", "openai", "qdrant_client", "fastembed", "apscheduler"):
+        logging.getLogger(noisy).setLevel(logging.WARNING)
+
     structlog.configure(
         processors=[
             structlog.contextvars.merge_contextvars,
