@@ -12,7 +12,7 @@ class ChatAccessKey(Base):
     __tablename__ = "chat_access_keys"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    key: Mapped[str] = mapped_column(String(36), nullable=False, unique=True)
+    key: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     label: Mapped[str | None] = mapped_column(String(100), nullable=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
     max_requests: Mapped[int | None] = mapped_column(Integer, nullable=True)

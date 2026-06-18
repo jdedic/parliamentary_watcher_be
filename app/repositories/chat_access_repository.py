@@ -1,4 +1,4 @@
-import uuid
+import secrets
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,7 +37,7 @@ class ChatAccessKeyRepository:
         max_tokens: int | None,
     ) -> ChatAccessKey:
         key_obj = ChatAccessKey(
-            key=str(uuid.uuid4()),
+            key=secrets.token_urlsafe(9),
             label=label,
             is_admin=is_admin,
             max_requests=max_requests,
