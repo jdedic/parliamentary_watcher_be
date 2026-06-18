@@ -35,6 +35,9 @@ class ChatEvalRecord(Base):
     input_tokens: Mapped[int] = mapped_column(Integer)
     output_tokens: Mapped[int] = mapped_column(Integer)
     cost_estimate_usd: Mapped[float] = mapped_column(Float)
+    ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)
+    access_key_id: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    key_label: Mapped[str | None] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=text("NOW()")
     )

@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.auth import require_api_key
 from app.core.database import get_db
 from app.core.logging import get_logger
-from app.models.chat_access import ChatAccessKey
+from app.repositories.chat_access_repository import ChatAccessKeyRepository
 from app.schemas.chat_auth import ChatAuthRequest
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -17,19 +15,39 @@ logger = get_logger(__name__)
 async def verify_chat_password(
     body: ChatAuthRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(require_api_key),
 ) -> dict:
     try:
-        result = await db.execute(
-            select(ChatAccessKey).where(ChatAccessKey.key == body.password)
-        )
-        key = result.scalar_one_or_none()
-        if key is None:
+        repo = ChatAccessKeyRepository(db)
+        key_obj = await repo.get_by_key(body.password)
+        if key_obj is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid access code",
+                detail="Invalid or expired access code. Please contact the administrator for a new one.",
             )
-        return {"authenticated": True}
+
+        if not key_obj.is_admin:
+            if key_obj.max_requests is not None and key_obj.requests_used >= key_obj.max_requests:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Your access code has expired — you have used all available requests. Please contact the administrator for a new one.",
+                )
+            if key_obj.max_tokens is not None and key_obj.tokens_used >= key_obj.max_tokens:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Your access code has expired — you have used all available tokens. Please contact the administrator for a new one.",
+                )
+
+        return {
+            "authenticated": True,
+            "requests_remaining": (
+                key_obj.max_requests - key_obj.requests_used
+                if key_obj.max_requests is not None else None
+            ),
+            "tokens_remaining": (
+                key_obj.max_tokens - key_obj.tokens_used
+                if key_obj.max_tokens is not None else None
+            ),
+        }
     except HTTPException:
         raise
     except Exception as exc:

@@ -382,8 +382,8 @@ def _build_static_context(session) -> str:
             lines = ["Speaker stances:"]
             for s in stances:
                 lines.append(
-                    f"- {sanitize_text(s['speaker'])} ({sanitize_text(s.get('party', '?'))}): "
-                    f"{s['stance']} — {sanitize_text(s['summary'])}"
+                    f"- {sanitize_text(s.get('speaker') or '?')} ({sanitize_text(s.get('party') or '?')}): "
+                    f"{s.get('stance', '?')} — {sanitize_text(s.get('summary') or '')}"
                 )
             context_parts.append("\n".join(lines))
     result = "\n\n".join(context_parts)
@@ -406,6 +406,9 @@ async def chat_about_session(
     message: str,
     history: list[ChatMessage],
     db: AsyncSession,
+    ip_address: str | None = None,
+    access_key_id: int | None = None,
+    key_label: str | None = None,
 ) -> dict:
     start_time = time.monotonic()
     message = sanitize_text(message)
@@ -504,6 +507,9 @@ async def chat_about_session(
         latency_ms=latency_ms,
         input_tokens=usage["input_tokens"],
         output_tokens=usage["output_tokens"],
+        ip_address=ip_address,
+        access_key_id=access_key_id,
+        key_label=key_label,
     ))
 
     logger.info(
@@ -523,4 +529,6 @@ async def chat_about_session(
         "generation_confidence": generation_confidence,
         "judge_verdict": judge_verdict,
         "accuracy_pct": get_accuracy_pct(),
+        "input_tokens": usage["input_tokens"],
+        "output_tokens": usage["output_tokens"],
     }

@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, Request, status
 
-from app.core.auth import require_api_key
+from app.core.auth import require_api_key, require_chat_key
 from app.core.database import get_db
 from app.core.limiter import limiter
 from app.core.logging import get_logger
+from app.models.chat_access import ChatAccessKey
 from app.models.plenary_session import SessionStatus
+from app.repositories.chat_access_repository import ChatAccessKeyRepository
 from app.core.config import settings
 from app.schemas.plenary_session import SessionListResponse, PlenarySessionSchema, ChatRequest, ChatResponse
 from app.services.session_service import SessionService, sync_sessions
@@ -152,12 +154,19 @@ async def chat_session(
     session_id: str,
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
-    _: str = Depends(require_api_key),
+    key_obj: ChatAccessKey = Depends(require_chat_key),
 ) -> ChatResponse:
+    ip_address = request.client.host if request.client else None
     try:
-        result = await chat_about_session(session_id, body.message, body.history, db)
-        resp = ChatResponse(**result)
-        return resp
+        result = await chat_about_session(
+            session_id,
+            body.message,
+            body.history,
+            db,
+            ip_address=ip_address,
+            access_key_id=key_obj.id,
+            key_label=key_obj.label,
+        )
     except ValueError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
     except Exception as exc:
@@ -166,6 +175,21 @@ async def chat_session(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Chat request failed.",
         )
+
+    if not key_obj.is_admin:
+        key_repo = ChatAccessKeyRepository(db)
+        state = await key_repo.increment_usage_and_check(
+            key_id=key_obj.id,
+            input_tokens=result["input_tokens"],
+            output_tokens=result["output_tokens"],
+        )
+        request_limit_hit = state["max_requests"] is not None and state["requests_used"] >= state["max_requests"]
+        token_limit_hit = state["max_tokens"] is not None and state["tokens_used"] >= state["max_tokens"]
+        if request_limit_hit or token_limit_hit:
+            await key_repo.revoke(key_obj.id)
+
+    await db.commit()
+    return ChatResponse(**result)
 
 
 @router.post(
