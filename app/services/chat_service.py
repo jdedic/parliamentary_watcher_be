@@ -528,7 +528,7 @@ async def chat_about_session(
         "retrieval_confidence": confidence,
         "generation_confidence": generation_confidence,
         "judge_verdict": judge_verdict,
-        "accuracy_pct": get_accuracy_pct(),
+        "accuracy_pct": await get_accuracy_pct(),
         "input_tokens": usage["input_tokens"],
         "output_tokens": usage["output_tokens"],
     }

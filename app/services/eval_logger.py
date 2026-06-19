@@ -1,8 +1,7 @@
-import asyncio
-import json
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
+
+from sqlalchemy import func, select
 
 from app.core.config import settings
 from app.core.database import AsyncSessionLocal
@@ -27,31 +26,17 @@ def _resolve_run_id() -> str:
     return settings.eval_run_id or f"live_{datetime.now(timezone.utc).strftime('%Y%m%d')}"
 
 
-def _write_entry(log_path: Path, entry: dict) -> None:
-    with log_path.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-
-
-def get_accuracy_pct() -> float | None:
-    log_path = Path(settings.xml_storage_path).parent / "chat_eval.jsonl"
-    if not log_path.exists():
-        return None
-    total, passed = 0, 0
-    with log_path.open(encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            try:
-                row = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if row.get("_summary"):
-                continue
-            total += 1
-            if row.get("judge_verdict") == "pass":
-                passed += 1
-    return round(passed / total * 100, 1) if total else None
+async def get_accuracy_pct() -> float | None:
+    async with AsyncSessionLocal() as db:
+        total_result = await db.execute(select(func.count()).select_from(ChatEvalRecord))
+        total = total_result.scalar_one()
+        if not total:
+            return None
+        passed_result = await db.execute(
+            select(func.count()).select_from(ChatEvalRecord).where(ChatEvalRecord.judge_verdict == "pass")
+        )
+        passed = passed_result.scalar_one()
+    return round(passed / total * 100, 1)
 
 
 async def log_chat_response(
@@ -103,12 +88,6 @@ async def log_chat_response(
         "cost_estimate_usd": _compute_cost(model, input_tokens, output_tokens),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
-    log_path = Path(settings.xml_storage_path).parent / "chat_eval.jsonl"
-    try:
-        await asyncio.to_thread(_write_entry, log_path, entry)
-    except Exception as exc:
-        logger.warning("eval_log_write_failed", error=str(exc))
-
     try:
         judge = entry["judge"]
         async with AsyncSessionLocal() as db:

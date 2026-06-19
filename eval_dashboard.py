@@ -194,18 +194,21 @@ st.divider()
 # ── Question table ────────────────────────────────────────────────────────────
 
 st.subheader("Questions")
+st.caption("Click a row to see its full details below.")
 
 table_cols = ["created_at", "run_id", "judge_verdict", "retrieval_confidence",
               "generation_confidence", "latency_ms", "cost_estimate_usd",
               "regenerated", "question"]
 available = [c for c in table_cols if c in df.columns]
-df_display = df[available].sort_values("created_at", ascending=False).reset_index(drop=True)
+df_sorted = df.sort_values("created_at", ascending=False).reset_index(drop=True)
+df_display = df_sorted[available]
 
 verdict_filter = st.selectbox("Filter table by verdict", ["All"] + verdicts, index=0)
 if verdict_filter != "All":
     df_display = df_display[df_display["judge_verdict"] == verdict_filter]
+    df_sorted = df_sorted[df_sorted["judge_verdict"] == verdict_filter].reset_index(drop=True)
 
-st.dataframe(
+selection = st.dataframe(
     df_display.style.apply(
         lambda row: [
             f"background-color: {VERDICT_COLORS.get(row.get('judge_verdict', ''), '#ffffff')}22"
@@ -214,21 +217,25 @@ st.dataframe(
     ),
     use_container_width=True,
     height=300,
+    on_select="rerun",
+    selection_mode="single-row",
 )
 
 st.divider()
 
 
-# ── Question detail expander ──────────────────────────────────────────────────
+# ── Question detail ───────────────────────────────────────────────────────────
 
 st.subheader("Question detail")
-question_options = df.sort_values("created_at", ascending=False)["question"].tolist()
-if question_options:
-    selected_q = st.selectbox("Select question", question_options)
-    row = df[df["question"] == selected_q].iloc[0]
+
+selected_rows = selection.selection.get("rows", [])
+if not selected_rows:
+    st.info("Click a row in the table above to view its details.")
+else:
+    row = df_sorted.iloc[selected_rows[0]]
 
     verdict_color = VERDICT_COLORS.get(row.get("judge_verdict", ""), "#888")
-    st.markdown(f"**Verdict:** :{verdict_color}[{row.get('judge_verdict', '—')}]")
+    st.markdown(f"**Verdict:** <span style='color:{verdict_color}'>{row.get('judge_verdict', '—')}</span>", unsafe_allow_html=True)
 
     col_a, col_b = st.columns(2)
     with col_a:
