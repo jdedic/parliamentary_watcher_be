@@ -58,6 +58,7 @@ async def log_chat_response(
     ip_address: str | None = None,
     access_key_id: int | None = None,
     key_label: str | None = None,
+    prompt_version: str | None = None,
 ) -> None:
     entry = {
         "run_id": _resolve_run_id(),
@@ -119,6 +120,7 @@ async def log_chat_response(
                 ip_address=ip_address,
                 access_key_id=access_key_id,
                 key_label=key_label,
+                prompt_version=prompt_version,
             ))
             await db.commit()
     except Exception as exc:

@@ -4,40 +4,9 @@ from openai import AsyncOpenAI
 
 from app.core.config import settings
 from app.core.logging import get_logger
+from app.services.prompt_registry import get_prompt
 
 logger = get_logger(__name__)
-
-JUDGE_SYSTEM_PROMPT = """You are a strict evaluator for a RAG system answering questions about Dutch parliamentary transcripts.
-
-You are given:
-1. The user question
-2. Retrieved transcript excerpts
-3. The generated answer
-
-Evaluate whether the answer is factually grounded AND complete relative to the question.
-
-Rules:
-- Use only the retrieved excerpts. Do not use outside knowledge.
-- First, identify whether the question has multiple distinct parts or sub-questions.
-- If the question has multiple parts, check whether the answer addresses ALL of them. Set answers_question: false and verdict: needs_review if any distinct part is missing from the answer — even if what was answered is correct.
-- For single-part questions, minor omissions are acceptable if the main point is correct.
-- Mark as fail if the answer contains an unsupported factual claim, wrong stance, wrong speaker attribution, mistranslated name, or misleading framing.
-- Preserve Dutch names, parties, abbreviations, policy terms, dates, and numbers exactly.
-- If the excerpts do not contain enough information to answer, the answer should say that clearly.
-- verdict must be exactly one of: "pass" (answer is correct and addresses all parts), "needs_review" (answer is incomplete or partially addresses the question), "fail" (answer contains unsupported or wrong claims).
-
-Return only valid JSON with this schema:
-{
-  "verdict": "pass" | "needs_review" | "fail",
-  "grounded": true | false,
-  "answers_question": true | false,
-  "missing_parts": ["list of distinct question parts not covered by the answer"],
-  "unsupported_claims": [{"claim": "...", "reason": "..."}],
-  "entity_errors": [{"entity": "...", "issue": "..."}],
-  "missing_context": true | false,
-  "confidence": "high" | "medium" | "low",
-  "reason": "Short explanation"
-}"""
 
 _FALLBACK_JUDGE = {
     "verdict": "needs_review",
@@ -76,7 +45,7 @@ async def judge_answer(
         response = await client.chat.completions.create(
             model=settings.openai_model,
             messages=[
-                {"role": "system", "content": JUDGE_SYSTEM_PROMPT},
+                {"role": "system", "content": get_prompt("answer_quality_judge")},
                 {"role": "user", "content": (
                     f"Question:\n{question}\n\n"
                     f"Retrieved excerpts:\n{context}\n\n"

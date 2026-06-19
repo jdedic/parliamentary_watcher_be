@@ -11,6 +11,7 @@ from app.core.logging import get_logger
 from app.core.openai_retry import chat_with_retry
 from app.core.utils import validate_guid
 from app.repositories.plenary_session_repository import PlenarySessionRepository
+from app.services.prompt_registry import get_prompt
 from app.services.translation_service import translate_stances
 
 logger = get_logger(__name__)
@@ -47,32 +48,6 @@ EXTRACTION_RESPONSE_FORMAT = {
 
 RANKING_RESPONSE_FORMAT = EXTRACTION_RESPONSE_FORMAT
 
-EXTRACTION_SYSTEM_PROMPT = """You are a parliamentary analyst extracting speaker stances from a Dutch parliamentary debate.
-For each speaker in the excerpt below, classify their stance on the main topic of this debate.
-
-Return a JSON object with a single key "stances" containing an array. Each item must have:
-- speaker (string)
-- party (string or null)
-- activity (string — the debate topic)
-- stance ("support" | "oppose" | "unclear")
-- summary (1-2 zinnen die de positie samenvatten in het Nederlands)
-- evidence (1-2 original sentences from their speech that justify the stance classification)
-
-Rules:
-- Only include speakers who clearly express a position.
-- Do not invent stances not supported by the text.
-- If stance cannot be determined from the text, use "unclear".
-- Deduplicate: include each speaker only once per activity."""
-
-RANKING_SYSTEM_PROMPT = """You are a parliamentary analyst selecting the most politically significant speaker stances from a plenary session.
-From the list below, select between 10 and 20 of the most important stances.
-
-Prefer:
-- Speakers from different parties (diverse representation)
-- Topics with visible disagreement between parties
-- Politically significant positions over procedural ones
-
-Return a JSON object with a single key "stances" containing the selected stances array in the same format as the input."""
 
 
 def _is_procedural(activity: str) -> bool:
@@ -170,7 +145,7 @@ async def _do_extract_stances(vergadering_id: str, db: AsyncSession) -> None:
                 model=settings.openai_model,
                 response_format=EXTRACTION_RESPONSE_FORMAT,
                 messages=[
-                    {"role": "system", "content": EXTRACTION_SYSTEM_PROMPT},
+                    {"role": "system", "content": get_prompt("stance_extractor")},
                     {"role": "user", "content": f"Activity: {activity_name}\n\n{activity_text}"},
                 ],
             )
@@ -221,7 +196,7 @@ async def _do_extract_stances(vergadering_id: str, db: AsyncSession) -> None:
             model=settings.openai_model,
             response_format=RANKING_RESPONSE_FORMAT,
             messages=[
-                {"role": "system", "content": RANKING_SYSTEM_PROMPT},
+                {"role": "system", "content": get_prompt("stance_ranker")},
                 {"role": "user", "content": json.dumps({"stances": all_stances}, ensure_ascii=False)},
             ],
         )

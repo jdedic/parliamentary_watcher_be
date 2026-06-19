@@ -6,18 +6,9 @@ from openai import AsyncOpenAI, RateLimitError, APIError
 from app.core.config import settings
 from app.core.logging import get_logger
 from app.core.openai_retry import chat_with_retry
+from app.services.prompt_registry import get_prompt
 
 logger = get_logger(__name__)
-
-SUMMARY_TRANSLATION_PROMPT = """You are a professional translator specialising in Dutch parliamentary texts.
-Translate the following Dutch parliamentary session summary into clear, fluent English.
-Preserve all proper nouns (names of people, parties, institutions) exactly as written.
-Do not add or remove content — this is a direct translation only."""
-
-STANCES_TRANSLATION_PROMPT = """You are a professional translator specialising in Dutch parliamentary texts.
-Translate the following Dutch text into clear, fluent English.
-Preserve all proper nouns (names of people, parties, institutions) exactly as written.
-Return only the translated text, nothing else."""
 
 
 async def translate_summary(dutch_text: str) -> str:
@@ -29,7 +20,7 @@ async def translate_summary(dutch_text: str) -> str:
             model=settings.openai_model,
             max_tokens=1200,
             messages=[
-                {"role": "system", "content": SUMMARY_TRANSLATION_PROMPT},
+                {"role": "system", "content": get_prompt("summary_translator")},
                 {"role": "user", "content": dutch_text},
             ],
         )
@@ -61,7 +52,7 @@ async def translate_stances(stances_data: dict) -> str:
                     model=settings.openai_model,
                     max_tokens=300,
                     messages=[
-                        {"role": "system", "content": STANCES_TRANSLATION_PROMPT},
+                        {"role": "system", "content": get_prompt("stances_translator")},
                         {"role": "user", "content": dutch_text},
                     ],
                 )

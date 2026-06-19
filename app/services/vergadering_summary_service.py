@@ -12,6 +12,7 @@ from app.core.openai_retry import chat_with_retry
 from app.core.utils import validate_guid
 from app.models.plenary_session import SessionStatus
 from app.repositories.plenary_session_repository import PlenarySessionRepository
+from app.services.prompt_registry import get_prompt
 from app.services.translation_service import translate_summary
 
 logger = get_logger(__name__)
@@ -19,23 +20,6 @@ logger = get_logger(__name__)
 # ~50 k tokens — largest observed session is 140 chunks / ~123 k chars; 200 k gives
 # headroom above real data while still guarding against corrupted/runaway input.
 MAX_SUMMARY_INPUT_CHARS = 200_000
-
-GENERAL_SUMMARY_PROMPT = """You are a parliamentary analyst responsible for producing an accurate and neutral summary of a parliamentary plenary session.
-Below are summaries of individual excerpts from a single plenary session.
-Write a comprehensive, neutral analytical summary of 300–500 words.
-Do not exceed the word limit — it is strictly enforced.
-
-Structure:
-- Organise the summary around the main agenda items discussed, in the order they appeared.
-- For each agenda item, describe the topic, the key positions taken by speakers, and any notable outcomes or decisions.
-- Highlight major interventions and challenges between speakers where relevant.
-
-Neutrality:
-- Do not add personal opinions or interpretations.
-- Do not favour any speaker or political position.
-- Avoid partisan or speculative language.
-
-Antwoord in het Nederlands."""
 
 
 async def generate_vergadering_summary(vergadering_id: str, db: AsyncSession) -> None:
@@ -115,7 +99,7 @@ async def generate_vergadering_summary(vergadering_id: str, db: AsyncSession) ->
                 client,
                 model=settings.openai_model,
                 messages=[
-                    {"role": "system", "content": GENERAL_SUMMARY_PROMPT},
+                    {"role": "system", "content": get_prompt("session_summariser")},
                     {"role": "user", "content": combined_input},
                 ],
             )

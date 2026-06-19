@@ -13,19 +13,9 @@ from app.core.openai_retry import chat_with_retry
 from app.core.utils import validate_guid
 from app.models.plenary_session import SessionStatus
 from app.repositories.plenary_session_repository import PlenarySessionRepository
+from app.services.prompt_registry import get_prompt
 
 logger = get_logger(__name__)
-
-SYSTEM_PROMPT = """You are an expert analyst of Dutch parliamentary debates.
-Summarize the following excerpt from a plenary session in 3-5 concise sentences.
-Write a coherent, neutral summary of the plenary session.
-Focus on: who is speaking, what topic is being discussed, and what position is taken.
-Antwoord in het Nederlands.
-Exclusions:
-Ignore applause.
-Ignore procedural remarks.
-Ignore technical or administrative interruptions.
-"""
 
 BATCH_SIZE = 3
 
@@ -41,7 +31,7 @@ async def _summarise_chunk(client: AsyncOpenAI, chunk: dict) -> None:
             model=settings.openai_model,
             max_tokens=400,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": get_prompt("chunk_summariser")},
                 {"role": "user", "content": chunk["text"]},
             ],
         )
