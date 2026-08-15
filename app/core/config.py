@@ -35,13 +35,17 @@ class Settings(BaseSettings):
 
     # Storage
     xml_storage_path: str = "storage/xml_files"
+    speaker_images_path: str = "storage/speaker_images"
+    speaker_placeholder_image_path: str = "app/assets/speaker_placeholder.png"
 
-    @field_validator("xml_storage_path", mode="before")
+    @field_validator(
+        "xml_storage_path", "speaker_images_path", "speaker_placeholder_image_path", mode="before"
+    )
     @classmethod
-    def _resolve_xml_storage_path(cls, v: str) -> str:
+    def _resolve_storage_path(cls, v: str) -> str:
         p = Path(v)
         return str(p if p.is_absolute() else BASE_DIR / p)
-    
+
     eval_run_id: str = ""      # Empty = auto "live_{YYYYMMDD}"; set to e.g. "benchmark_001" for named runs
 
     sync_limit: int = 3        # Number of vergaderings with Eindpublicatie to sync

@@ -15,10 +15,12 @@ from app.core.scheduler import start_scheduler, stop_scheduler
 from app.models import plenary_session  # noqa: F401 — ensures models are registered
 from app.models import chat_access  # noqa: F401 — ensures models are registered
 from app.models import prompt_version  # noqa: F401 — ensures models are registered
+from app.models import speaker  # noqa: F401 — ensures models are registered
 from app.api.routes.sessions import router as sessions_router
 from app.api.routes.auth import router as auth_router
 from app.api.routes.admin import router as admin_router
 from app.api.routes.prompts import router as prompts_router
+from app.api.routes.speakers import router as speakers_router
 from app.services.session_service import sync_sessions
 from app.services.chat_service import init_clients, close_clients, _get_qdrant
 from app.services.embedding_service import _ensure_collection
@@ -96,6 +98,7 @@ app.include_router(sessions_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(admin_router, prefix="/api/v1")
 app.include_router(prompts_router, prefix="/api/v1")
+app.include_router(speakers_router, prefix="/api/v1")
 
 
 async def _check_db() -> str:

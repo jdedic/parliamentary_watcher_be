@@ -186,3 +186,62 @@ async def download_verslag_xml(verslag_id: str) -> bytes:
     base = str(settings.tweede_kamer_base_url).rstrip("/")
     url = f"{base}/Verslag({verslag_id})/resource"
     return await http_get_bytes(url)
+
+
+def _odata_escape(value: str) -> str:
+    """Escape a string literal for use inside an OData $filter clause."""
+    return value.replace("'", "''")
+
+
+async def fetch_fractie_by_afkorting(afkorting: str) -> dict | None:
+    """Look up a party by its abbreviation (e.g. 'VVD'). Reliable — low ambiguity."""
+    base = str(settings.tweede_kamer_base_url).rstrip("/")
+    url = f"{base}/Fractie"
+    params = {
+        "$filter": f"Afkorting eq '{_odata_escape(afkorting)}' and Verwijderd eq false",
+        "$orderby": "DatumActief desc",
+        "$top": "1",
+    }
+    raw = await http_get_json(url, params=params)
+    results = raw.get("value", [])
+    return results[0] if results else None
+
+
+async def fetch_persoon_candidates(achternaam: str) -> list[dict]:
+    """Find Persoon records by surname. Ambiguous — surnames are not unique, caller must disambiguate."""
+    base = str(settings.tweede_kamer_base_url).rstrip("/")
+    url = f"{base}/Persoon"
+    params = {
+        "$filter": f"Achternaam eq '{_odata_escape(achternaam)}' and Verwijderd eq false",
+    }
+    raw = await http_get_json(url, params=params)
+    return raw.get("value", [])
+
+
+async def fetch_fractiezetel_persoon(persoon_id: str) -> list[dict]:
+    """Fetch a person's party-seat membership history (Van/TotEnMet date ranges)."""
+    base = str(settings.tweede_kamer_base_url).rstrip("/")
+    url = f"{base}/FractieZetelPersoon"
+    params = {
+        "$filter": f"Persoon_Id eq {persoon_id} and Verwijderd eq false",
+        "$orderby": "Van desc",
+    }
+    raw = await http_get_json(url, params=params)
+    return raw.get("value", [])
+
+
+async def fetch_fractie_for_fractiezetel(fractiezetel_id: str) -> dict | None:
+    """Resolve a FractieZetel_Id to its Fractie (party) record."""
+    base = str(settings.tweede_kamer_base_url).rstrip("/")
+    zetel = await http_get_json(f"{base}/FractieZetel({fractiezetel_id})")
+    fractie_id = zetel.get("Fractie_Id")
+    if not fractie_id:
+        return None
+    return await http_get_json(f"{base}/Fractie({fractie_id})")
+
+
+async def download_persoon_photo(persoon_id: str) -> bytes:
+    """Download a person's portrait photo."""
+    base = str(settings.tweede_kamer_base_url).rstrip("/")
+    url = f"{base}/Persoon({persoon_id})/resource"
+    return await http_get_bytes(url)
