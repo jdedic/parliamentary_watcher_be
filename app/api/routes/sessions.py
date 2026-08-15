@@ -54,11 +54,19 @@ async def get_sessions(
     title: str | None = Query(default=None, description="Filter by title (case-insensitive substring match)"),
     meeting_number: int | None = Query(default=None, description="Filter by meeting number (exact match)"),
     status_filter: SessionStatus | None = Query(default=None, alias="status", description="Filter by session status"),
+    is_final: bool | None = Query(default=None, description="Filter by finality: true for sessions backed by an Eindpublicatie, false for provisional (Tussenpublicatie-only) sessions"),
     service: SessionService = Depends(),
     _: str = Depends(require_api_key),
 ) -> SessionListResponse:
     try:
-        return await service.list(skip=skip, limit=limit, title=title, meeting_number=meeting_number, status=status_filter)
+        return await service.list(
+            skip=skip,
+            limit=limit,
+            title=title,
+            meeting_number=meeting_number,
+            status=status_filter,
+            is_final=is_final,
+        )
     except Exception as exc:
         logger.error("list_sessions_failed", error=str(exc), exc_info=True)
         raise HTTPException(

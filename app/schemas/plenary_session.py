@@ -34,6 +34,7 @@ class PlenarySessionSchema(BaseModel):
     deleted: bool
     chair: str | None
     status: SessionStatus | None
+    is_final: bool
     created_at: datetime
     summary: str | None = None
     stances: Any | None = None
@@ -86,6 +87,7 @@ class PlenarySessionListItemSchema(BaseModel):
     summary: str | None = None
     summary_en: str | None = None
     status: SessionStatus | None
+    is_final: bool
     meeting_number: int | None
     parliamentary_year: str | None
 

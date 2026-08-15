@@ -80,32 +80,55 @@ async def fetch_vergadering_list() -> dict:
     return await http_get_json(url, params=params)
 
 
-async def fetch_vergaderings_with_eindpublicatie(limit: int, batch_size: int) -> list[dict]:
+def pick_current_verslag(verslagen: list[dict]) -> dict | None:
     """
-    Fetch vergaderings that have at least one Eindpublicatie XML, newest first.
+    Pick the best available verslag for a vergadering: Eindpublicatie (final) if one
+    exists, else the most recently modified Tussenpublicatie (provisional), else None
+    (a lone Voorpublicatie/Casco isn't real content yet).
+
+    Returns the verslag dict with an added ``is_final`` key, or None.
+    """
+    eindpublicaties = [v for v in verslagen if v.get("Soort") == "Eindpublicatie"]
+    if eindpublicaties:
+        return {**eindpublicaties[0], "is_final": True}
+
+    tussenpublicaties = sorted(
+        (v for v in verslagen if v.get("Soort") == "Tussenpublicatie"),
+        key=lambda v: v.get("ApiGewijzigdOp") or "",
+        reverse=True,
+    )
+    if tussenpublicaties:
+        return {**tussenpublicaties[0], "is_final": False}
+
+    return None
+
+
+async def fetch_vergaderingen_with_latest_verslag(limit: int, batch_size: int) -> list[dict]:
+    """
+    Fetch vergaderings that have at least a Tussenpublicatie (provisional) or
+    Eindpublicatie (final) verslag, newest first.
 
     Pages through the API in batches of ``batch_size`` until ``limit``
     qualifying vergaderings are collected or the API has no more results.
 
     Args:
-        limit: Number of vergaderings with Eindpublicatie to collect.
+        limit: Number of vergaderings to collect.
         batch_size: Number of vergaderings to request per API page.
 
     Returns:
-        List of vergadering dicts, each with a ``verslagen`` key containing
-        only its Eindpublicatie records.
+        List of vergadering dicts, each with a ``current_verslag`` key (the verslag
+        dict picked by ``pick_current_verslag``, including its ``is_final`` flag).
     """
     base = str(settings.tweede_kamer_base_url).rstrip("/")
     vergadering_url = f"{base}/Vergadering"
-    verslag_url = f"{base}/Verslag"
 
     collected: list[dict] = []
     skip = 0
 
     while len(collected) < limit:
         params = {
-            "$filter": "Verwijderd eq false",
-            "$orderby": "ApiGewijzigdOp desc",
+            "$filter": "Verwijderd eq false and Soort eq 'Plenair'",
+            "$orderby": "Datum desc",
             "$top": str(batch_size),
             "$skip": str(skip),
         }
@@ -121,23 +144,16 @@ async def fetch_vergaderings_with_eindpublicatie(limit: int, batch_size: int) ->
             if not vergadering_id:
                 continue
 
-            verslag_params = {
-                "$filter": (
-                    f"Verwijderd eq false"
-                    f" and Vergadering_Id eq {vergadering_id}"
-                    f" and Soort eq 'Eindpublicatie'"
-                ),
-                "$orderby": "ApiGewijzigdOp desc",
-            }
-            verslag_raw = await http_get_json(verslag_url, params=verslag_params)
-            eindpublicaties: list[dict] = verslag_raw.get("value", [])
+            verslag_raw = await fetch_verslag_list_raw(vergadering_id)
+            current_verslag = pick_current_verslag(verslag_raw.get("value", []))
 
-            if eindpublicaties:
-                vergadering["verslagen"] = eindpublicaties
+            if current_verslag:
+                vergadering["current_verslag"] = current_verslag
                 collected.append(vergadering)
                 logger.debug(
-                    "Vergadering with Eindpublicatie found",
+                    "Vergadering with usable verslag found",
                     vergadering_id=vergadering_id,
+                    is_final=current_verslag["is_final"],
                     collected=len(collected),
                 )
 
@@ -147,7 +163,7 @@ async def fetch_vergaderings_with_eindpublicatie(limit: int, batch_size: int) ->
         skip += batch_size
 
     logger.info(
-        "Collected vergaderings with Eindpublicatie",
+        "Collected vergaderingen with latest verslag",
         requested=limit,
         found=len(collected),
     )

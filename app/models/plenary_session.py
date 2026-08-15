@@ -41,6 +41,8 @@ class PlenarySession(Base):
     summary_sources: Mapped[str | None] = mapped_column(Text, nullable=True)
     summary_en: Mapped[str | None] = mapped_column(Text, nullable=True)
     stances_en: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_final: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="false")
+    current_verslag_id: Mapped[str | None] = mapped_column(String, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=text("NOW()")
@@ -64,6 +66,7 @@ class PlenarySessionDocument(Base):
         String, ForeignKey("plenary_sessions.id", ondelete="CASCADE"), nullable=False
     )
     document_id: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    kind: Mapped[str | None] = mapped_column(String, nullable=True)
     file_path: Mapped[str | None] = mapped_column(String, nullable=True)
     downloaded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=text("NOW()")

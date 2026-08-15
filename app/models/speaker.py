@@ -15,7 +15,7 @@ class Speaker(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     function: Mapped[str | None] = mapped_column(String(200), nullable=True)
-    party_afkorting: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    party_afkorting: Mapped[str | None] = mapped_column(String(200), nullable=True)
     party_name_nl: Mapped[str | None] = mapped_column(String(200), nullable=True)
     party_name_en: Mapped[str | None] = mapped_column(String(200), nullable=True)
     tk_persoon_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
