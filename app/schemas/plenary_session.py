@@ -109,6 +109,15 @@ class ChatRequest(BaseModel):
     history: list[ChatMessage] = Field(default=[], max_length=20)
 
 
+class ChunkDetail(BaseModel):
+    chunk_id: str
+    rrf_score: float
+    rerank_score: float | None = None
+    chunk_index: int | None = None
+    is_neighbor: bool
+    speakers: list[str] = []
+
+
 class ChatResponse(BaseModel):
     answer: str
     retrieved_chunk_ids: list[str]
@@ -117,3 +126,4 @@ class ChatResponse(BaseModel):
     generation_confidence: Literal["high", "medium", "low"]
     judge_verdict: Literal["pass", "needs_review", "fail"]
     accuracy_pct: float | None = None
+    chunks: list[ChunkDetail] = []

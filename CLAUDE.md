@@ -20,7 +20,40 @@ Runs on `http://127.0.0.1:8000`. Docs at `/docs`.
 - `app/services/chat_service.py` — RAG engine. Do not modify without explicit instruction.
 - `app/services/judge_service.py` — LLM-as-a-judge with JSON structured output. Verdicts: `pass`, `needs_review`, `fail`.
 - `app/services/translation_service.py` — Dutch → English translation via GPT-4.1-mini.
+- `app/services/prompt_registry.py` — in-memory prompt cache. `get_prompt(name, **kwargs)` for sync lookup; `load_all_prompts()` called at startup.
 - `app/core/config.py` — all environment settings.
+
+## Prompt versioning
+All system prompts are stored in the `prompt_versions` PostgreSQL table — never hardcoded in service files. Services call `get_prompt("name")` from `prompt_registry.py`.
+
+**Prompt names and their roles:**
+| Name | Role |
+|------|------|
+| `rag_assistant` | Main parliamentary chat system prompt — has `{context}` and `{answer_language}` placeholders |
+| `query_preprocessor` | Translates query to Dutch, extracts people/orgs/topic keywords for BM25 — `entity_query` must include topic terms, not just names |
+| `answer_quality_judge` | RAG grounding and completeness evaluator |
+| `chunk_summariser` | Single chunk → 3-5 sentence Dutch summary |
+| `session_summariser` | Full session → 300-500 word neutral Dutch summary |
+| `stance_extractor` | Speaker stance extraction per debate activity |
+| `stance_ranker` | Selects top 10-20 politically significant stances |
+| `summary_translator` | Dutch → English session summary translation |
+| `stances_translator` | Dutch → English stance translation |
+
+**To update a prompt without redeploying:**
+1. `POST /api/v1/admin/prompts/{name}` with `{"content": "..."}` → creates new version
+2. `PUT /api/v1/admin/prompts/{name}/activate/{version}` → hot-reloads cache immediately
+3. Every chat eval record stores which version was active (`prompt_version` column in `chat_eval_records`, format: `rag_assistant@v2`)
+
+**Never add hardcoded prompt strings to service files** — always go through the registry.
+
+## Chat access keys (user passwords)
+Users access the chat via a 12-character key (`secrets.token_urlsafe(9)`, e.g. `xK9mZ3pQrL2v`) sent in the `X-Chat-Key` header.
+
+- Keys are stored in `chat_access_keys` table (`app/models/chat_access.py`)
+- Managed via `POST/GET/DELETE /api/v1/admin/keys` (requires `X-API-Key`)
+- **Auto-revoke**: keys expire automatically when `requests_used >= max_requests` OR `tokens_used >= max_tokens`. Set these limits when creating a key; `null` means unlimited.
+- Admin keys (`is_admin: true`) are never rate-limited or auto-revoked
+- Key generation: `app/repositories/chat_access_repository.py` → `create()`
 
 ## Translation rules — always enforce
 - Preserve proper nouns exactly: people's names, party names (VVD, D66, PVV…), institutions, policy terms, Dutch abbreviations.

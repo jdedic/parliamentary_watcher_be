@@ -5,6 +5,7 @@ import uuid
 
 from openai import AsyncOpenAI
 from fastembed import SparseTextEmbedding
+from sentence_transformers import CrossEncoder
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import (
     Filter, FieldCondition, MatchValue, MatchText,
@@ -30,6 +31,7 @@ MAX_MESSAGE_CHARS = 2000
 ALLOWED_ROLES = {"user", "assistant"}
 
 _sparse_model: SparseTextEmbedding | None = None
+_reranker: CrossEncoder | None = None
 _openai_client: AsyncOpenAI | None = None
 _qdrant_client: AsyncQdrantClient | None = None
 
@@ -39,6 +41,13 @@ def _get_sparse_model() -> SparseTextEmbedding:
     if _sparse_model is None:
         _sparse_model = SparseTextEmbedding(model_name="Qdrant/bm25")
     return _sparse_model
+
+
+def _get_reranker() -> CrossEncoder:
+    global _reranker
+    if _reranker is None:
+        _reranker = CrossEncoder("cross-encoder/mmarco-mMiniLMv2-L12-H384-v1")
+    return _reranker
 
 
 def _get_openai() -> AsyncOpenAI:
@@ -357,6 +366,23 @@ def _compute_confidence(scores: list[float]) -> str:
     return "low"
 
 
+async def _rerank_chunks(query: str, chunks: list[dict]) -> list[dict]:
+    non_neighbors = [c for c in chunks if not c.get("is_neighbor")]
+    neighbors = [c for c in chunks if c.get("is_neighbor")]
+    if not non_neighbors:
+        return chunks
+
+    reranker = _get_reranker()
+    pairs = [(query, c["text"]) for c in non_neighbors]
+    scores = await asyncio.to_thread(reranker.predict, pairs)
+
+    for i, c in enumerate(non_neighbors):
+        c["rerank_score"] = float(scores[i])
+
+    non_neighbors.sort(key=lambda c: c["rerank_score"], reverse=True)
+    return non_neighbors + neighbors
+
+
 async def chat_about_session(
     session_id: str,
     message: str,
@@ -380,6 +406,9 @@ async def chat_about_session(
 
     try:
         generator_chunks, judge_chunks, preprocessed = await _retrieve_relevant_chunks(client, session_id, message)
+        if generator_chunks:
+            dutch_query = preprocessed.get("query_nl") or message
+            generator_chunks = await _rerank_chunks(dutch_query, generator_chunks)
     except Exception as exc:
         logger.warning("qdrant_retrieval_failed", session_id=session_id, error=str(exc), exc_info=True)
         generator_chunks, judge_chunks, preprocessed = [], [], {}
@@ -393,11 +422,11 @@ async def chat_about_session(
                 for i, chunk in enumerate(judge_chunks, 1)
             ],
         )
-        logger.debug(
+        logger.info(
             "generator_chunks",
             count=len(generator_chunks),
             chunks=[
-                {"i": i, "score": round(chunk["score"], 4), "chunk_index": chunk.get("chunk_index"), "is_neighbor": chunk.get("is_neighbor", False), "chunk_id": chunk.get("chunk_id", "")[:8]}
+                {"i": i, "score": round(chunk["score"], 4), "rerank_score": round(chunk["rerank_score"], 2) if "rerank_score" in chunk else None, "chunk_index": chunk.get("chunk_index"), "is_neighbor": chunk.get("is_neighbor", False), "chunk_id": chunk.get("chunk_id", "")[:8]}
                 for i, chunk in enumerate(generator_chunks, 1)
             ],
         )
@@ -488,4 +517,15 @@ async def chat_about_session(
         "accuracy_pct": await get_accuracy_pct(),
         "input_tokens": usage["input_tokens"],
         "output_tokens": usage["output_tokens"],
+        "chunks": [
+            {
+                "chunk_id": c.get("chunk_id", ""),
+                "rrf_score": round(c["score"], 4),
+                "rerank_score": round(c["rerank_score"], 3) if "rerank_score" in c else None,
+                "chunk_index": c.get("chunk_index"),
+                "is_neighbor": c.get("is_neighbor", False),
+                "speakers": c.get("speakers", []),
+            }
+            for c in generator_chunks
+        ],
     }

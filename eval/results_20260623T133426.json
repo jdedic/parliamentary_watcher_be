@@ -1,0 +1,162 @@
+{
+  "timestamp": "20260623T133426",
+  "questions_evaluated": 10,
+  "aggregate": {
+    "no_rerank": {
+      "r1": 0.067,
+      "r3": 0.18,
+      "r5": 0.302,
+      "mrr": 0.82,
+      "ndcg5": 0.806
+    },
+    "rerank": {
+      "r1": 0.092,
+      "r3": 0.215,
+      "r5": 0.312,
+      "mrr": 0.9,
+      "ndcg5": 0.867
+    }
+  },
+  "per_question": [
+    {
+      "question": "Welke organisaties werden genoemd als mogelijke gesprekspartners, zoals LTO, NAJK en Stichting Stikstofclaim?",
+      "relevant_count": 7,
+      "a_r1": 0.14285714285714285,
+      "a_r3": 0.42857142857142855,
+      "a_r5": 0.7142857142857143,
+      "a_mrr": 1.0,
+      "a_ndcg5": 0.9999999999999999,
+      "b_r1": 0.14285714285714285,
+      "b_r3": 0.42857142857142855,
+      "b_r5": 0.5714285714285714,
+      "b_mrr": 1.0,
+      "b_ndcg5": 0.9010196182278052
+    },
+    {
+      "question": "Wat werd er besproken over Natura 2000-gebieden?",
+      "relevant_count": 19,
+      "a_r1": 0.05263157894736842,
+      "a_r3": 0.15789473684210525,
+      "a_r5": 0.2631578947368421,
+      "a_mrr": 1.0,
+      "a_ndcg5": 0.9999999999999999,
+      "b_r1": 0.05263157894736842,
+      "b_r3": 0.15789473684210525,
+      "b_r5": 0.2631578947368421,
+      "b_mrr": 1.0,
+      "b_ndcg5": 0.9999999999999999
+    },
+    {
+      "question": "Welke hoofdthema’s kwamen tijdens deze vergadering aan bod?",
+      "relevant_count": 16,
+      "a_r1": 0.0625,
+      "a_r3": 0.0625,
+      "a_r5": 0.125,
+      "a_mrr": 1.0,
+      "a_ndcg5": 0.7692798105748722,
+      "b_r1": 0.0625,
+      "b_r3": 0.1875,
+      "b_r5": 0.25,
+      "b_mrr": 1.0,
+      "b_ndcg5": 0.9999999999999998
+    },
+    {
+      "question": "Wat zijn de drie hoofdsporen van de stikstofaanpak van het kabinet?",
+      "relevant_count": 4,
+      "a_r1": 0.0,
+      "a_r3": 0.0,
+      "a_r5": 0.25,
+      "a_mrr": 0.2,
+      "a_ndcg5": 0.48711477971984796,
+      "b_r1": 0.25,
+      "b_r3": 0.25,
+      "b_r5": 0.5,
+      "b_mrr": 1.0,
+      "b_ndcg5": 0.7692798105748722
+    },
+    {
+      "question": "Welke rol speelt natuurherstel in de stikstofaanpak van de minister?",
+      "relevant_count": 14,
+      "a_r1": 0.07142857142857142,
+      "a_r3": 0.14285714285714285,
+      "a_r5": 0.2857142857142857,
+      "a_mrr": 1.0,
+      "a_ndcg5": 0.9010196182278052,
+      "b_r1": 0.07142857142857142,
+      "b_r3": 0.21428571428571427,
+      "b_r5": 0.35714285714285715,
+      "b_mrr": 1.0,
+      "b_ndcg5": 0.9999999999999999
+    },
+    {
+      "question": "Welke zorgen werden geuit over het minimumloon, sociale zekerheid of bezuinigingen?",
+      "relevant_count": 19,
+      "a_r1": 0.05263157894736842,
+      "a_r3": 0.15789473684210525,
+      "a_r5": 0.2631578947368421,
+      "a_mrr": 1.0,
+      "a_ndcg5": 0.9999999999999999,
+      "b_r1": 0.05263157894736842,
+      "b_r3": 0.15789473684210525,
+      "b_r5": 0.2631578947368421,
+      "b_mrr": 1.0,
+      "b_ndcg5": 0.9999999999999999
+    },
+    {
+      "question": "Welke vragen werden gesteld over de IVA of WIA-hervormingen?",
+      "relevant_count": 12,
+      "a_r1": 0.08333333333333333,
+      "a_r3": 0.25,
+      "a_r5": 0.4166666666666667,
+      "a_mrr": 1.0,
+      "a_ndcg5": 0.9999999999999999,
+      "b_r1": 0.08333333333333333,
+      "b_r3": 0.25,
+      "b_r5": 0.4166666666666667,
+      "b_mrr": 1.0,
+      "b_ndcg5": 0.9999999999999999
+    },
+    {
+      "question": "Welke zorgen werden geuit over veranderend grondgebruik nadat boeren stoppen?",
+      "relevant_count": 10,
+      "a_r1": 0.1,
+      "a_r3": 0.3,
+      "a_r5": 0.3,
+      "a_mrr": 1.0,
+      "a_ndcg5": 1.0,
+      "b_r1": 0.1,
+      "b_r3": 0.3,
+      "b_r5": 0.3,
+      "b_mrr": 1.0,
+      "b_ndcg5": 1.0
+    },
+    {
+      "question": "Wat vroeg Laura Bromet over rechterlijke uitspraken en het stikstofbeleid?",
+      "relevant_count": 10,
+      "a_r1": 0.1,
+      "a_r3": 0.3,
+      "a_r5": 0.4,
+      "a_mrr": 1.0,
+      "a_ndcg5": 0.9010196182278052,
+      "b_r1": 0.1,
+      "b_r3": 0.2,
+      "b_r5": 0.2,
+      "b_mrr": 1.0,
+      "b_ndcg5": 1.0
+    },
+    {
+      "question": "Kun je het debat samenvatten in 5 bullet points?",
+      "relevant_count": 1,
+      "a_r1": 0.0,
+      "a_r3": 0.0,
+      "a_r5": 0.0,
+      "a_mrr": 0.0,
+      "a_ndcg5": 0.0,
+      "b_r1": 0.0,
+      "b_r3": 0.0,
+      "b_r5": 0.0,
+      "b_mrr": 0.0,
+      "b_ndcg5": 0.0
+    }
+  ]
+}
