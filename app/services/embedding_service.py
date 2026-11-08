@@ -9,6 +9,7 @@ from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import (
     Distance, VectorParams, SparseVectorParams, SparseIndexParams,
     PointStruct, SparseVector, PayloadSchemaType,
+    Filter, FieldCondition, MatchValue,
 )
 
 from app.core.config import settings
@@ -112,6 +113,16 @@ async def generate_embeddings(vergadering_id: str) -> dict:
     openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
     qdrant_client = _get_qdrant_client()
     sparse_model = _get_sparse_model()
+
+    # Chunk/point ids are freshly randomised on every call — delete any points from a
+    # prior run (e.g. a provisional transcript later superseded) before upserting the
+    # new batch, otherwise reprocessing a session leaves stale vectors orphaned forever.
+    await qdrant_client.delete(
+        collection_name=settings.qdrant_collection,
+        points_selector=Filter(
+            must=[FieldCondition(key="vergadering_id", match=MatchValue(value=vergadering_id))]
+        ),
+    )
 
     await _ensure_collection(qdrant_client)
 

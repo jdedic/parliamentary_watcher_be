@@ -18,6 +18,7 @@ class PlenarySessionRepository:
         title: str | None = None,
         meeting_number: int | None = None,
         status: SessionStatus | None = None,
+        is_final: bool | None = None,
     ) -> tuple[int, list[PlenarySession]]:
         """
         Retrieve paginated list of sessions with their documents.
@@ -32,6 +33,8 @@ class PlenarySessionRepository:
             filters.append(PlenarySession.meeting_number == meeting_number)
         if status is not None:
             filters.append(PlenarySession.status == status)
+        if is_final is not None:
+            filters.append(PlenarySession.is_final.is_(is_final))
 
         count_result = await self.db.execute(
             select(func.count()).select_from(PlenarySession).where(*filters)
@@ -66,6 +69,13 @@ class PlenarySessionRepository:
             .where(PlenarySession.id == session_id)
         )
         return result.scalar_one() > 0
+
+    async def get_non_final_ids(self) -> list[str]:
+        """Return ids of all sessions not yet backed by an Eindpublicatie."""
+        result = await self.db.execute(
+            select(PlenarySession.id).where(PlenarySession.is_final.is_(False))
+        )
+        return list(result.scalars().all())
 
     async def upsert(self, session: PlenarySession) -> PlenarySession:
         """
@@ -104,6 +114,16 @@ class PlenarySessionRepository:
         session = await self.get_by_id(session_id)
         if session:
             session.status = status
+            await self.db.flush()
+
+    async def update_publication_state(
+        self, session_id: str, current_verslag_id: str, is_final: bool
+    ) -> None:
+        """Record which verslag currently backs a session's content, and its finality."""
+        session = await self.get_by_id(session_id)
+        if session:
+            session.current_verslag_id = current_verslag_id
+            session.is_final = is_final
             await self.db.flush()
 
     async def update_chair(self, session_id: str, chair: str) -> None:

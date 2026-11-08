@@ -8,6 +8,7 @@ from alembic import context
 from app.core.database import Base
 from app.models import plenary_session  # noqa: F401
 from app.models import chat_eval  # noqa: F401
+from app.models import speaker  # noqa: F401
 from app.core.config import settings
 
 config = context.config

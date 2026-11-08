@@ -9,8 +9,9 @@ from app.core.database import get_db
 from app.core.logging import get_logger
 from app.core.http_client import (
     fetch_vergadering_list,
-    fetch_vergaderings_with_eindpublicatie,
+    fetch_vergaderingen_with_latest_verslag,
     fetch_verslag_list_raw,
+    pick_current_verslag,
     download_verslag_xml,
 )
 from app.core.utils import to_iso, to_int, validate_guid
@@ -47,12 +48,76 @@ def _map_item_to_model(item: dict) -> PlenarySession:
     )
 
 
+async def _process_current_verslag(
+    session_id: str,
+    current_verslag: dict,
+    repo: PlenarySessionRepository,
+) -> tuple[bool, bool, bool]:
+    """
+    Download the session's current-best verslag if it's new.
+
+    Deliberately does NOT update the session's publication state (current_verslag_id/
+    is_final) — that only happens once the full pipeline has successfully reprocessed
+    the session (see sync_sessions, Step 5). Marking it "current" any earlier would mean
+    a mid-pipeline failure silently looks like success on the next sync: content_changed
+    would come back False even though summary/stances were never actually saved for
+    this revision, and the session would never be retried.
+
+    Returns (downloaded_new_document, content_changed, download_failed).
+    content_changed is True when this verslag differs from what the session was
+    previously tracking (a new Tussenpublicatie revision, or promotion to
+    Eindpublicatie) — i.e. the full pipeline needs to (re-)run.
+    """
+    doc_id = current_verslag.get("Id")
+    if not doc_id:
+        return False, False, False
+
+    session = await repo.get_by_id(session_id)
+    content_changed = session is None or session.current_verslag_id != doc_id
+
+    downloaded_new_document = False
+    if not await repo.document_exists(doc_id):
+        try:
+            xml_bytes = await download_verslag_xml(verslag_id=doc_id)
+        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+            logger.error(
+                "Failed to download XML for verslag",
+                document_id=doc_id,
+                session_id=session_id,
+                error=str(exc),
+            )
+            return False, False, True
+
+        file_path = _save_xml(session_id=session_id, doc_id=doc_id, data=xml_bytes)
+        doc = PlenarySessionDocument(
+            session_id=session_id,
+            document_id=doc_id,
+            kind=current_verslag.get("Soort"),
+            file_path=file_path,
+        )
+        await repo.add_document(doc)
+        downloaded_new_document = True
+        logger.info(
+            "XML downloaded and saved",
+            session_id=session_id,
+            document_id=doc_id,
+            is_final=current_verslag["is_final"],
+            file_path=file_path,
+        )
+
+    return downloaded_new_document, content_changed, False
+
+
 async def sync_sessions(db: AsyncSession) -> dict:
     """
     Full sync pipeline:
-      1. Fetch all sessions from Tweede Kamer API.
-      2. Persist new sessions to the database.
-      3. For each session, fetch and download associated XML documents.
+      1. Discover vergaderingen with a usable verslag (Tussenpublicatie or
+         Eindpublicatie) and persist any new sessions.
+      2. Re-check already-tracked non-final sessions directly, in case a newer
+         Tussenpublicatie or the Eindpublicatie has since appeared.
+      3. Download the current verslag XML for any session whose content changed.
+      4. Re-run the full pipeline (transcript → chunks → embeddings → summary →
+         stances) only for sessions whose content actually changed this run.
 
     Args:
         db: Active async database session.
@@ -66,14 +131,14 @@ async def sync_sessions(db: AsyncSession) -> dict:
     failed_sessions = 0
     failed_documents = 0
 
-    # --- Step 1: Fetch vergaderings that have an Eindpublicatie ---
+    # --- Step 1: Discover vergaderingen with a usable verslag ---
     logger.info(
-        "Starting session sync — collecting vergaderings with Eindpublicatie",
+        "Starting session sync — collecting vergaderingen with a usable verslag",
         limit=settings.sync_limit,
         batch_size=settings.sync_batch_size,
     )
     try:
-        items = await fetch_vergaderings_with_eindpublicatie(
+        discovered = await fetch_vergaderingen_with_latest_verslag(
             limit=settings.sync_limit,
             batch_size=settings.sync_batch_size,
         )
@@ -94,10 +159,11 @@ async def sync_sessions(db: AsyncSession) -> dict:
             f"External API responded with HTTP {exc.response.status_code}."
         ) from exc
 
-    logger.info("Fetched sessions with Eindpublicatie", count=len(items))
+    logger.info("Fetched vergaderingen with usable verslag", count=len(discovered))
 
-    # --- Step 2: Persist new sessions ---
-    for item in items:
+    # --- Step 2: Persist newly discovered sessions ---
+    sessions_to_process: dict[str, dict] = {}
+    for item in discovered:
         session_id = item.get("Id")
         if not session_id:
             logger.warning("Skipping item with missing Id", item=item)
@@ -115,82 +181,56 @@ async def sync_sessions(db: AsyncSession) -> dict:
             logger.error("Failed to persist session", session_id=session_id, error=str(exc))
             continue
 
-        # --- Step 3: Download XMLs — verslagen already fetched in Step 1 ---
-        verslagen: list[dict] = item.get("verslagen", [])
-        if not verslagen:
-            await repo.update_status(session_id, SessionStatus.FAILED)
-            logger.warning("No XML documents found for session, marked FAILED", session_id=session_id)
-            continue
-
-        for verslag in verslagen:
-            doc_id = verslag.get("Id")
-            if not doc_id:
-                continue
-
-            already_exists = await repo.document_exists(doc_id)
-            if already_exists:
-                logger.debug("Document already downloaded, skipping", document_id=doc_id)
-                continue
-
-            # Download XML bytes
-            try:
-                xml_bytes = await download_verslag_xml(verslag_id=doc_id)
-            except (httpx.RequestError, httpx.HTTPStatusError) as exc:
-                failed_documents += 1
-                logger.error(
-                    "Failed to download XML for verslag",
-                    document_id=doc_id,
-                    error=str(exc),
-                )
-                continue
-
-            # Save XML to filesystem
-            file_path = _save_xml(session_id=session_id, doc_id=doc_id, data=xml_bytes)
-
-            # Record in database
-            doc = PlenarySessionDocument(
-                session_id=session_id,
-                document_id=doc_id,
-                file_path=file_path,
-            )
-            await repo.add_document(doc)
-            new_documents += 1
-            logger.info(
-                "XML downloaded and saved",
-                session_id=session_id,
-                document_id=doc_id,
-                file_path=file_path,
-            )
+        sessions_to_process[session_id] = item["current_verslag"]
 
     await db.commit()
 
-    # --- Step 4: Build transcript JSON for each session that has XML files ---
-    processed_sessions = [item.get("Id") for item in items if item.get("Id")]
-    for session_id in processed_sessions:
+    # --- Step 3: Re-check already-tracked non-final sessions not seen above ---
+    pending_ids = await repo.get_non_final_ids()
+    for session_id in pending_ids:
+        if session_id in sessions_to_process:
+            continue
         try:
-            current_status = await repo.get_status(session_id)
+            verslag_raw = await fetch_verslag_list_raw(session_id)
+        except (httpx.RequestError, httpx.HTTPStatusError) as exc:
+            logger.error("Failed to re-check pending session", session_id=session_id, error=str(exc))
+            continue
 
-            if current_status in (SessionStatus.CHUNK_SUMMARISED, SessionStatus.SUMMARISED):
-                logger.info(
-                    "session_already_processed_skipping",
-                    session_id=session_id,
-                    status=current_status,
-                )
-                continue
+        current_verslag = pick_current_verslag(verslag_raw.get("value", []))
+        if current_verslag:
+            sessions_to_process[session_id] = current_verslag
 
-            if current_status != SessionStatus.DOWNLOADED:
-                # Parse XML → transcript.json (utterances, speaker, party, activity, timestamps)
-                _, chair_name = await build_transcript(session_id)
-                if chair_name:
-                    await repo.update_chair(session_id, chair_name)
-                # Split transcript into 800-1200 word exchange-based chunks → chunks.json
-                await build_chunks(session_id)
-                # Build sentence-aware 300-500 word chunks for vector search → chunks_embeddings.json
-                await build_embedding_chunks(session_id)
-                # Embed chunks and upsert into Qdrant (plenary_chunks collection)
-                await generate_embeddings(session_id)
-                logger.info("embeddings_generated", session_id=session_id)
-                await repo.update_status(session_id, SessionStatus.DOWNLOADED)
+    # --- Step 4: Download current verslag (if new) + update publication state ---
+    sessions_needing_reprocess: list[str] = []
+    for session_id, current_verslag in sessions_to_process.items():
+        downloaded, content_changed, download_failed = await _process_current_verslag(
+            session_id, current_verslag, repo
+        )
+        if download_failed:
+            failed_documents += 1
+        if downloaded:
+            new_documents += 1
+        if content_changed:
+            sessions_needing_reprocess.append(session_id)
+
+    await db.commit()
+
+    # --- Step 5: Re-run the full pipeline only for sessions whose content changed ---
+    for session_id in sessions_needing_reprocess:
+        try:
+            # Parse XML → transcript.json (utterances, speaker, party, activity, timestamps)
+            _, chair_name = await build_transcript(session_id)
+            if chair_name:
+                await repo.update_chair(session_id, chair_name)
+            # Split transcript into 800-1200 word exchange-based chunks → chunks.json
+            await build_chunks(session_id)
+            # Build sentence-aware 300-500 word chunks for vector search → chunks_embeddings.json
+            await build_embedding_chunks(session_id)
+            # Embed chunks and upsert into Qdrant (plenary_chunks collection) — replaces
+            # any previously-embedded revision of this session (see generate_embeddings).
+            await generate_embeddings(session_id)
+            logger.info("embeddings_generated", session_id=session_id)
+            await repo.update_status(session_id, SessionStatus.DOWNLOADED)
 
             # Step 1 of 2 summarisation: summarise each chunk individually (map step).
             # Writes 3-5 sentence summary per chunk back into chunks.json.
@@ -203,12 +243,26 @@ async def sync_sessions(db: AsyncSession) -> dict:
 
             # Step 2 of 2 summarisation: combine all chunk summaries into one 300-500 word
             # general session summary (reduce step). Saves to DB, sets status SUMMARISED.
-            # Triggered manually via POST /sessions/{id}/summarise endpoint.
             await generate_vergadering_summary(session_id, db)
+
+            # Only now mark this verslag as "current" — after every step above has
+            # actually succeeded and been flushed, so a mid-pipeline failure leaves
+            # content_changed True (and thus gets retried) on the next sync instead
+            # of being silently treated as already handled.
+            current_verslag = sessions_to_process[session_id]
+            await repo.update_publication_state(
+                session_id,
+                current_verslag_id=current_verslag["Id"],
+                is_final=current_verslag["is_final"],
+            )
         except (FileNotFoundError, ValueError) as exc:
             logger.debug("Skipping transcript build", session_id=session_id, reason=str(exc))
         except Exception as exc:
             logger.error("Failed to build transcript or chunks", session_id=session_id, error=str(exc))
+            # A failed flush leaves the session's transaction unusable — without this,
+            # every subsequent session in this run would fail too (PendingRollbackError),
+            # turning one bad session into a cascading failure across the whole batch.
+            await db.rollback()
 
     await db.commit()
 
@@ -217,7 +271,8 @@ async def sync_sessions(db: AsyncSession) -> dict:
         "new_documents": new_documents,
         "failed_sessions": failed_sessions,
         "failed_documents": failed_documents,
-        "total_fetched": len(items),
+        "total_fetched": len(discovered),
+        "reprocessed": len(sessions_needing_reprocess),
     }
     logger.info("Session sync complete", **summary)
     return summary
@@ -285,9 +340,10 @@ class SessionService:
         title: str | None = None,
         meeting_number: int | None = None,
         status: SessionStatus | None = None,
+        is_final: bool | None = None,
     ) -> SessionListResponse:
         total, sessions = await self.repo.get_all(
-            skip=skip, limit=limit, title=title, meeting_number=meeting_number, status=status
+            skip=skip, limit=limit, title=title, meeting_number=meeting_number, status=status, is_final=is_final
         )
         return SessionListResponse(
             total=total,

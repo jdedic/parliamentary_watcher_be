@@ -12,6 +12,7 @@ from app.core.openai_retry import chat_with_retry
 from app.core.utils import validate_guid
 from app.repositories.plenary_session_repository import PlenarySessionRepository
 from app.services.prompt_registry import get_prompt
+from app.services.speaker_service import get_or_create_speaker
 from app.services.translation_service import translate_stances
 
 logger = get_logger(__name__)
@@ -229,6 +230,11 @@ async def _do_extract_stances(vergadering_id: str, db: AsyncSession) -> None:
             stance["utterance_ids"] = stance_uid_index.get(
                 (stance.get("speaker"), stance.get("activity")), []
             )
+
+    # Resolve/cache a speaker_id for each stance (DB-only, no network calls here)
+    for stance in final_stances:
+        speaker_row = await get_or_create_speaker(db, stance.get("speaker"), stance.get("party"))
+        stance["speaker_id"] = speaker_row.id if speaker_row else None
 
     output = json.dumps({
         "extracted_at": datetime.now(timezone.utc).isoformat(),
