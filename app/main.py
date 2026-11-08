@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from slowapi.errors import RateLimitExceeded
 
+from app.core.chat_audit import ChatAuditMiddleware
 from app.core.limiter import limiter
 from app.core.logging import setup_logging, get_logger
 from app.core.database import engine, AsyncSessionLocal
@@ -86,6 +87,8 @@ def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONRespons
 
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
+
+app.add_middleware(ChatAuditMiddleware)
 
 app.add_middleware(
     CORSMiddleware,

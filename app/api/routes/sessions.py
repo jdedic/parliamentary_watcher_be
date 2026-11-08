@@ -162,7 +162,7 @@ async def chat_session(
     session_id: str,
     body: ChatRequest,
     db: AsyncSession = Depends(get_db),
-    key_obj: ChatAccessKey = Depends(require_chat_key),
+    key_obj: ChatAccessKey | None = Depends(require_chat_key),
 ) -> ChatResponse:
     ip_address = request.client.host if request.client else None
     try:
@@ -172,8 +172,8 @@ async def chat_session(
             body.history,
             db,
             ip_address=ip_address,
-            access_key_id=key_obj.id,
-            key_label=key_obj.label,
+            access_key_id=key_obj.id if key_obj else None,
+            key_label=key_obj.label if key_obj else None,
         )
     except ValueError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Session not found.")
@@ -184,7 +184,7 @@ async def chat_session(
             detail="Chat request failed.",
         )
 
-    if not key_obj.is_admin:
+    if key_obj is not None and not key_obj.is_admin:
         key_repo = ChatAccessKeyRepository(db)
         state = await key_repo.increment_usage_and_check(
             key_id=key_obj.id,

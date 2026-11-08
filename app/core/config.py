@@ -60,6 +60,9 @@ class Settings(BaseSettings):
     # Rate limiting
     chat_rate_limit: str = "20/minute"
 
+    # When false, chat is open to anyone; the per-IP rate limit is the only guard.
+    chat_require_key: bool = False
+
     # Logging
     log_level: str = "INFO"
     environment: str = "development"  # "production" enables JSON logging

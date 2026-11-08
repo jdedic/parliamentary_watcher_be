@@ -14,7 +14,7 @@ Runs on `http://127.0.0.1:8000`. Docs at `/docs`.
 - Strict layered architecture: routes → services → repositories → models. Never skip layers.
 - All DB access goes through `PlenarySessionRepository` (`app/repositories/plenary_session_repository.py`).
 - Config is Pydantic Settings in `app/core/config.py` — use env vars to override, never hardcode values.
-- Rate limit for chat is `chat_rate_limit` in config (currently `20/minute`).
+- Rate limit for chat is `chat_rate_limit` in config (currently `20/minute`, keyed per client IP, in-memory per process).
 
 ## Key files
 - `app/services/chat_service.py` — RAG engine. Do not modify without explicit instruction.
@@ -47,13 +47,18 @@ All system prompts are stored in the `prompt_versions` PostgreSQL table — neve
 **Never add hardcoded prompt strings to service files** — always go through the registry.
 
 ## Chat access keys (user passwords)
-Users access the chat via a 12-character key (`secrets.token_urlsafe(9)`, e.g. `xK9mZ3pQrL2v`) sent in the `X-Chat-Key` header.
+**Chat is currently open** — `chat_require_key` in config defaults to `False`, so `require_chat_key` returns `None` and `/auth/chat` accepts any code. Set `CHAT_REQUIRE_KEY=true` to re-enable the key gate; everything below applies only then. While open, the per-IP `chat_rate_limit` is the only guard, and eval records have no `access_key_id`.
+
+When enabled, users access the chat via a 12-character key (`secrets.token_urlsafe(9)`, e.g. `xK9mZ3pQrL2v`) sent in the `X-Chat-Key` header.
 
 - Keys are stored in `chat_access_keys` table (`app/models/chat_access.py`)
 - Managed via `POST/GET/DELETE /api/v1/admin/keys` (requires `X-API-Key`)
 - **Auto-revoke**: keys expire automatically when `requests_used >= max_requests` OR `tokens_used >= max_tokens`. Set these limits when creating a key; `null` means unlimited.
 - Admin keys (`is_admin: true`) are never rate-limited or auto-revoked
 - Key generation: `app/repositories/chat_access_repository.py` → `create()`
+
+## Chat audit logging
+`ChatAuditMiddleware` (`app/core/chat_audit.py`) logs one `chat_attempt` line per POST to `/sessions/{id}/chat` and `/auth/chat` — including 401/403/429/500 rejections, which never reach the route or `chat_eval_records`. Fields: endpoint, session_id, status, ip, forwarded_for, user_agent, key_present, access_key_id, latency_ms. Never log the raw key; auth code sets `request.state.chat_access_key_id` once a key resolves. Only successful chats are stored in the DB (`chat_eval_records`).
 
 ## Translation rules — always enforce
 - Preserve proper nouns exactly: people's names, party names (VVD, D66, PVV…), institutions, policy terms, Dutch abbreviations.
