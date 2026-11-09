@@ -149,6 +149,7 @@ async def test_sync_sessions_unchanged_session_is_noop():
     pipeline.generate_embeddings.assert_not_awaited()
 
 
+@pytest.mark.skip(reason="Tussenpublicatie ingestion temporarily disabled in pick_current_verslag")
 @pytest.mark.asyncio
 async def test_sync_sessions_newer_tussenpublicatie_triggers_reprocess():
     """A pending session (found via get_non_final_ids, not this run's discovery) whose

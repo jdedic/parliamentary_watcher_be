@@ -92,13 +92,15 @@ def pick_current_verslag(verslagen: list[dict]) -> dict | None:
     if eindpublicaties:
         return {**eindpublicaties[0], "is_final": True}
 
-    tussenpublicaties = sorted(
-        (v for v in verslagen if v.get("Soort") == "Tussenpublicatie"),
-        key=lambda v: v.get("ApiGewijzigdOp") or "",
-        reverse=True,
-    )
-    if tussenpublicaties:
-        return {**tussenpublicaties[0], "is_final": False}
+    # Provisional (Tussenpublicatie) ingestion temporarily disabled — only final reports
+    # are processed for now. Uncomment to resume picking up provisional verslagen.
+    # tussenpublicaties = sorted(
+    #     (v for v in verslagen if v.get("Soort") == "Tussenpublicatie"),
+    #     key=lambda v: v.get("ApiGewijzigdOp") or "",
+    #     reverse=True,
+    # )
+    # if tussenpublicaties:
+    #     return {**tussenpublicaties[0], "is_final": False}
 
     return None
 
