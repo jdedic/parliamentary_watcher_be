@@ -37,7 +37,8 @@ def load_data() -> pd.DataFrame:
     if not raw_url:
         st.error("DATABASE_URL environment variable is not set.")
         return pd.DataFrame()
-    db_url = raw_url.replace("+asyncpg", "")
+    # Pin the sync driver explicitly: SQLAlchemy 2.1 made bare postgresql:// default to psycopg (v3).
+    db_url = sa.engine.make_url(raw_url).set(drivername="postgresql+psycopg2")
     engine = sa.create_engine(db_url)
     try:
         df = pd.read_sql("SELECT * FROM chat_eval_records ORDER BY created_at DESC", engine)
